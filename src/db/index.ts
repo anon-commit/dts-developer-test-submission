@@ -8,18 +8,6 @@ const pool = new pg.Pool({
   port: 5432,
 });
 
-async function query(
-  text: string,
-  params: any,
-  callback: (err: Error, result: pg.QueryResult<any>) => void,
-) {
-  const start = Date.now();
-  const res = await pool.query(text, params);
-  const duration = Date.now() - start;
-  console.log("executed query:", { text, duration, rows: res.rowCount });
-  return pool.query(text, params, callback);
-}
-
 async function connectDB() {
   try {
     await pool.query(`
@@ -47,4 +35,4 @@ async function connectDB() {
   }
 }
 
-export { pool, query, connectDB };
+export { pool, connectDB };
