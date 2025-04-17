@@ -35,6 +35,11 @@ const tasks = new Hono();
 tasks.get("/", async (c: Context) => {
   try {
     const tasks = await Task.getAll();
+
+    if (tasks.length === 0) {
+      return c.json({ message: "No tasks found" }, 404);
+    }
+
     return c.json(tasks, 200);
   } catch (error) {
     console.error("Error fetching tasks: ", error);
