@@ -109,7 +109,6 @@ class Task {
         description: this.description,
         status: this.status,
         due_date: this.due_date,
-        created_at: new Date(),
       },
       pool,
     );

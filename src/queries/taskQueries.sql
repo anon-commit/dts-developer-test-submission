@@ -11,6 +11,6 @@ UPDATE tasks SET status = :newStatus! WHERE id = :taskId! RETURNING id;
 DELETE FROM tasks WHERE id = :taskId! RETURNING id;
 
 /* @name insertTask */
-INSERT INTO tasks (title, description, status, due_date, created_at)
-VALUES (:title!, :description, :status!, :due_date!, :created_at!)
+INSERT INTO tasks (title, description, status, due_date)
+VALUES (:title!, :description, :status!, :due_date!)
 RETURNING id;

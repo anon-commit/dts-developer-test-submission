@@ -25,8 +25,8 @@ async function connectDB() {
         title VARCHAR(255) NOT NULL,
         description TEXT,
         status status NOT NULL DEFAULT 'TODO',
-        due_date TIMESTAMP NOT NULL,
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+        due_date TIMESTAMP WITH TIME ZONE NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
       )
     `);
     console.log("Connected to PostgreSQL database");

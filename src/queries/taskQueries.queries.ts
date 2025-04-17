@@ -124,7 +124,6 @@ export const deleteTask = new PreparedQuery<IDeleteTaskParams,IDeleteTaskResult>
 
 /** 'InsertTask' parameters type */
 export interface IInsertTaskParams {
-  created_at: DateOrString;
   description?: string | null | void;
   due_date: DateOrString;
   status: status;
@@ -142,13 +141,13 @@ export interface IInsertTaskQuery {
   result: IInsertTaskResult;
 }
 
-const insertTaskIR: any = {"usedParamSet":{"title":true,"description":true,"status":true,"due_date":true,"created_at":true},"params":[{"name":"title","required":true,"transform":{"type":"scalar"},"locs":[{"a":77,"b":83}]},{"name":"description","required":false,"transform":{"type":"scalar"},"locs":[{"a":86,"b":97}]},{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":100,"b":107}]},{"name":"due_date","required":true,"transform":{"type":"scalar"},"locs":[{"a":110,"b":119}]},{"name":"created_at","required":true,"transform":{"type":"scalar"},"locs":[{"a":122,"b":133}]}],"statement":"INSERT INTO tasks (title, description, status, due_date, created_at)\nVALUES (:title!, :description, :status!, :due_date!, :created_at!)\nRETURNING id"};
+const insertTaskIR: any = {"usedParamSet":{"title":true,"description":true,"status":true,"due_date":true},"params":[{"name":"title","required":true,"transform":{"type":"scalar"},"locs":[{"a":65,"b":71}]},{"name":"description","required":false,"transform":{"type":"scalar"},"locs":[{"a":74,"b":85}]},{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":88,"b":95}]},{"name":"due_date","required":true,"transform":{"type":"scalar"},"locs":[{"a":98,"b":107}]}],"statement":"INSERT INTO tasks (title, description, status, due_date)\nVALUES (:title!, :description, :status!, :due_date!)\nRETURNING id"};
 
 /**
  * Query generated from SQL:
  * ```
- * INSERT INTO tasks (title, description, status, due_date, created_at)
- * VALUES (:title!, :description, :status!, :due_date!, :created_at!)
+ * INSERT INTO tasks (title, description, status, due_date)
+ * VALUES (:title!, :description, :status!, :due_date!)
  * RETURNING id
  * ```
  */
