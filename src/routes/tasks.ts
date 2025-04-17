@@ -87,12 +87,19 @@ tasks.post("/", async (c: Context) => {
 
     if (!bodyValidation.success) {
       return c.json(
-        { message: "Validation failed", errors: bodyValidation.error.issues },
+        {
+          message: "Incorrect task format",
+          errors: bodyValidation.error.issues,
+        },
         400,
       );
     }
 
     const { title, status, due_date, description } = bodyValidation.data;
+
+    if (due_date < new Date()) {
+      return c.json({ message: "due_date must be in the future" }, 400);
+    }
 
     const newTask = new Task(title, status, due_date, description);
     await newTask.save();
