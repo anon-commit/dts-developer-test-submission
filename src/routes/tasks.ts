@@ -18,7 +18,10 @@ const CreateTaskSchema = z.object({
   status: StatusEnum.default("TODO"),
   due_date: z
     .string()
-    .datetime({ offset: true, message: "Invalid due_date format" })
+    .datetime({
+      message:
+        "Invalid due_date format. Dates must be supplied in ISO 8601 format with the UTC time zone designator.",
+    })
     .transform((str) => new Date(str)),
 });
 
