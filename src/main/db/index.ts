@@ -1,11 +1,14 @@
 import pg from "pg";
+import dotenv from "dotenv";
+
+dotenv.config({ path: [".env.local", ".env"] });
 
 const pool = new pg.Pool({
-  user: "postgres",
-  host: "localhost",
   database: "tasks",
-  password: "",
-  port: 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  password: process.env.DB_PASSWORD,
+  port: parseInt(process.env.DB_PORT!),
 });
 
 async function connectDB() {
@@ -29,6 +32,7 @@ async function connectDB() {
         created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
       )
     `);
+
     console.log("Connected to PostgreSQL database");
   } catch (error) {
     console.error("Database connection error:", error);
