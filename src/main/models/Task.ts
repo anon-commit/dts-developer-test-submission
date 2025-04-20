@@ -9,26 +9,30 @@ import {
 import type {
   IFindByIdResult,
   IGetAllTasksResult,
+  IUpdateStatusResult,
   status,
 } from "../queries/taskQueries.queries.js";
 
 class Task {
   title: string;
-  description?: string;
   status: status;
   due_date: Date;
   created_at: Date;
+  id?: number;
+  description?: string;
 
   constructor(
     title: string,
     status: status = "TODO",
     due_date: Date,
     description?: string,
+    id?: number,
   ) {
     this.title = title;
     this.status = status;
-    this.description = description;
     this.due_date = due_date;
+    this.description = description;
+    this.id = id;
   }
 
   /**
@@ -64,20 +68,23 @@ class Task {
    * Updates the status of task with id `id` in the database.
    *
    * @param {number} id - id of the task to update.
-   * @returns {Promise<number>} - A promise that resolves to 1 to indicate success or 0 if the task does not exist.
+   * @returns {Promise<IUpdateStatusResult | null>} - A promise that resolves to the updated status, or null if the task does not exist.
    * @throws {Error} - Throws if the query fails.
    */
-  static async updateStatus(id: number, newStatus: status): Promise<number> {
+  static async updateStatus(
+    id: number,
+    newStatus: status,
+  ): Promise<IUpdateStatusResult | null> {
     const result = await updateStatus.run(
       { taskId: id, newStatus: newStatus },
       pool,
     );
 
     if (result.length === 0) {
-      return 0;
+      return null;
     }
 
-    return 1;
+    return result[0];
   }
 
   /**
@@ -100,10 +107,11 @@ class Task {
   /**
    * Inserts the task into the database.
    *
+   * @returns {Promise<Task>} - A promise that resolves to the newly inserted task.
    * @throws {Error} - Throws if the query fails.
    */
-  async save() {
-    insertTask.run(
+  async save(): Promise<Task> {
+    const rawResult = await insertTask.run(
       {
         title: this.title,
         description: this.description,
@@ -111,6 +119,16 @@ class Task {
         due_date: this.due_date,
       },
       pool,
+    );
+
+    const result = rawResult[0];
+
+    return new Task(
+      result.title,
+      result.status,
+      result.due_date,
+      result.description ? result.description : undefined,
+      result.id,
     );
   }
 }

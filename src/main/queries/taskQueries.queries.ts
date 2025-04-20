@@ -1,4 +1,4 @@
-/** Types generated for queries found in "src/queries/taskQueries.sql" */
+/** Types generated for queries found in "src/main/queries/taskQueries.sql" */
 import { PreparedQuery } from '@pgtyped/runtime';
 
 export type status = 'DONE' | 'IN_PROGRESS' | 'TODO';
@@ -75,7 +75,7 @@ export interface IUpdateStatusParams {
 
 /** 'UpdateStatus' return type */
 export interface IUpdateStatusResult {
-  id: number;
+  status: status;
 }
 
 /** 'UpdateStatus' query type */
@@ -84,12 +84,13 @@ export interface IUpdateStatusQuery {
   result: IUpdateStatusResult;
 }
 
-const updateStatusIR: any = {"usedParamSet":{"newStatus":true,"taskId":true},"params":[{"name":"newStatus","required":true,"transform":{"type":"scalar"},"locs":[{"a":26,"b":36}]},{"name":"taskId","required":true,"transform":{"type":"scalar"},"locs":[{"a":49,"b":56}]}],"statement":"UPDATE tasks SET status = :newStatus! WHERE id = :taskId! RETURNING id"};
+const updateStatusIR: any = {"usedParamSet":{"newStatus":true,"taskId":true},"params":[{"name":"newStatus","required":true,"transform":{"type":"scalar"},"locs":[{"a":26,"b":36}]},{"name":"taskId","required":true,"transform":{"type":"scalar"},"locs":[{"a":49,"b":56}]}],"statement":"UPDATE tasks SET status = :newStatus! WHERE id = :taskId!\nRETURNING status"};
 
 /**
  * Query generated from SQL:
  * ```
- * UPDATE tasks SET status = :newStatus! WHERE id = :taskId! RETURNING id
+ * UPDATE tasks SET status = :newStatus! WHERE id = :taskId!
+ * RETURNING status
  * ```
  */
 export const updateStatus = new PreparedQuery<IUpdateStatusParams,IUpdateStatusResult>(updateStatusIR);
@@ -111,12 +112,13 @@ export interface IDeleteTaskQuery {
   result: IDeleteTaskResult;
 }
 
-const deleteTaskIR: any = {"usedParamSet":{"taskId":true},"params":[{"name":"taskId","required":true,"transform":{"type":"scalar"},"locs":[{"a":29,"b":36}]}],"statement":"DELETE FROM tasks WHERE id = :taskId! RETURNING id"};
+const deleteTaskIR: any = {"usedParamSet":{"taskId":true},"params":[{"name":"taskId","required":true,"transform":{"type":"scalar"},"locs":[{"a":29,"b":36}]}],"statement":"DELETE FROM tasks WHERE id = :taskId!\nRETURNING id"};
 
 /**
  * Query generated from SQL:
  * ```
- * DELETE FROM tasks WHERE id = :taskId! RETURNING id
+ * DELETE FROM tasks WHERE id = :taskId!
+ * RETURNING id
  * ```
  */
 export const deleteTask = new PreparedQuery<IDeleteTaskParams,IDeleteTaskResult>(deleteTaskIR);
@@ -132,7 +134,12 @@ export interface IInsertTaskParams {
 
 /** 'InsertTask' return type */
 export interface IInsertTaskResult {
+  created_at: Date;
+  description: string | null;
+  due_date: Date;
   id: number;
+  status: status;
+  title: string;
 }
 
 /** 'InsertTask' query type */
@@ -141,14 +148,14 @@ export interface IInsertTaskQuery {
   result: IInsertTaskResult;
 }
 
-const insertTaskIR: any = {"usedParamSet":{"title":true,"description":true,"status":true,"due_date":true},"params":[{"name":"title","required":true,"transform":{"type":"scalar"},"locs":[{"a":65,"b":71}]},{"name":"description","required":false,"transform":{"type":"scalar"},"locs":[{"a":74,"b":85}]},{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":88,"b":95}]},{"name":"due_date","required":true,"transform":{"type":"scalar"},"locs":[{"a":98,"b":107}]}],"statement":"INSERT INTO tasks (title, description, status, due_date)\nVALUES (:title!, :description, :status!, :due_date!)\nRETURNING id"};
+const insertTaskIR: any = {"usedParamSet":{"title":true,"description":true,"status":true,"due_date":true},"params":[{"name":"title","required":true,"transform":{"type":"scalar"},"locs":[{"a":65,"b":71}]},{"name":"description","required":false,"transform":{"type":"scalar"},"locs":[{"a":74,"b":85}]},{"name":"status","required":true,"transform":{"type":"scalar"},"locs":[{"a":88,"b":95}]},{"name":"due_date","required":true,"transform":{"type":"scalar"},"locs":[{"a":98,"b":107}]}],"statement":"INSERT INTO tasks (title, description, status, due_date)\nVALUES (:title!, :description, :status!, :due_date!)\nRETURNING *"};
 
 /**
  * Query generated from SQL:
  * ```
  * INSERT INTO tasks (title, description, status, due_date)
  * VALUES (:title!, :description, :status!, :due_date!)
- * RETURNING id
+ * RETURNING *
  * ```
  */
 export const insertTask = new PreparedQuery<IInsertTaskParams,IInsertTaskResult>(insertTaskIR);

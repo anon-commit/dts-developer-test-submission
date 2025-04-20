@@ -2,6 +2,7 @@ import type { Context } from "hono";
 import { z } from "zod";
 import Task from "../models/task.js";
 import { Hono } from "hono";
+import { successResponse, errorResponse } from "../helpers/responseWrapper.js";
 
 /*
  * Zod schemas
@@ -40,13 +41,15 @@ tasks.get("/", async (c: Context) => {
     const tasks = await Task.getAll();
 
     if (tasks.length === 0) {
-      return c.json({ message: "No tasks found" }, 404);
+      return c.json(errorResponse("No tasks found"), 404);
     }
 
-    return c.json(tasks, 200);
+    console.log(tasks)
+
+    return c.json(successResponse(tasks), 200);
   } catch (error) {
     console.error("Error fetching tasks: ", error);
-    return c.json({ message: "Failed to retrieve tasks" }, 500);
+    return c.json(errorResponse("Failed to retrieve tasks"), 500);
   }
 });
 
@@ -60,20 +63,20 @@ tasks.get("/:id", async (c: Context) => {
       id: c.req.param("id"),
     });
     if (!idValidation.success) {
-      return c.json({ message: "ID must only contain integers" }, 400);
+      return c.json(errorResponse("ID must only contain integers"), 400);
     }
     const { id } = idValidation.data;
 
     const task = await Task.findById(id);
     if (!task) {
-      return c.json({ message: "Task not found" }, 404);
+      return c.json(errorResponse("Task not found"), 404);
     }
 
-    return c.json(task, 200);
+    return c.json(successResponse(task), 200);
   } catch (error) {
     console.error("Error retrieving task: ", error);
     return c.json(
-      { message: "Failed to retrieve task (server side error)" },
+      errorResponse("Failed to retrieve task (server side error)"),
       500,
     );
   }
@@ -90,10 +93,7 @@ tasks.post("/", async (c: Context) => {
 
     if (!bodyValidation.success) {
       return c.json(
-        {
-          message: "Incorrect task format",
-          errors: bodyValidation.error.issues,
-        },
+        errorResponse("Incorrect task format", bodyValidation.error.issues),
         400,
       );
     }
@@ -101,16 +101,19 @@ tasks.post("/", async (c: Context) => {
     const { title, status, due_date, description } = bodyValidation.data;
 
     if (due_date < new Date()) {
-      return c.json({ message: "due_date must be in the future" }, 400);
+      return c.json(errorResponse("due_date must be in the future"), 400);
     }
 
     const newTask = new Task(title, status, due_date, description);
     await newTask.save();
 
-    return c.body(null, 201);
+    return c.json(successResponse({ task: { ...newTask } }), 201);
   } catch (error) {
     console.error("Error creating task: ", error);
-    return c.json({ message: "Failed to create task" }, 500);
+    return c.json(
+      errorResponse("Failed to create task (server side error"),
+      500,
+    );
   }
 });
 
@@ -122,17 +125,16 @@ tasks.patch("/status/:id", async (c: Context) => {
   try {
     const idValidation = TaskIdParamSchema.safeParse({ id: c.req.param("id") });
     if (!idValidation.success) {
-      return c.json({ message: "ID must only contain integers" }, 400);
+      return c.json(errorResponse("ID must only contain integers"), 400);
     }
 
     const body = await c.req.json();
     const bodyValidation = UpdateStatusSchema.safeParse(body);
     if (!bodyValidation.success) {
       return c.json(
-        {
-          message:
-            "status must be one of the following: 'TODO', 'IN_PROGRESS', 'DONE'",
-        },
+        errorResponse(
+          "status must be one of the following: 'TODO', 'IN_PROGRESS', 'DONE'",
+        ),
         400,
       );
     }
@@ -142,14 +144,14 @@ tasks.patch("/status/:id", async (c: Context) => {
 
     const result = await Task.updateStatus(id, status);
     if (!result) {
-      return c.json({ message: "Task not found" }, 404);
+      return c.json(errorResponse("Task not found"), 404);
     }
 
-    return c.body(null, 204);
+    return c.json(successResponse({ new_status: result.status }), 200);
   } catch (error) {
     console.error("Error updating task: ", error);
     return c.json(
-      { message: "Failed to update task status (server side error)" },
+      errorResponse("Failed to update task status (server side error)"),
       500,
     );
   }
@@ -165,20 +167,20 @@ tasks.delete("/:id", async (c: Context) => {
       id: c.req.param("id"),
     });
     if (!idValidation.success) {
-      return c.json({ message: "ID must only contain integers" }, 400);
+      return c.json(errorResponse("ID must only contain integers"), 400);
     }
     const { id } = idValidation.data;
 
     const result = await Task.delete(id);
     if (!result) {
-      return c.json({ message: "Task not found" }, 404);
+      return c.json(errorResponse("Task not found"), 404);
     }
 
     return c.body(null, 204);
   } catch (error) {
     console.error("Error deleting task: ", error);
     return c.json(
-      { message: "Failed to delete task (server side error)" },
+      errorResponse("Failed to delete task (server side error)"),
       500,
     );
   }
