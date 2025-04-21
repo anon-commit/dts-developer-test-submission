@@ -2,7 +2,9 @@
   "name": "dts-developer-test-backend",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/main/index.ts"
+    "dev": "tsx watch src/main/index.ts",
+    "init-db": "createdb -U postgres task_manager && psql -U postgres -d task_manager -f init_db.sql",
+    "seed-db": "psql -U postgres -d task_manager -f seed_db.sql"
   },
   "dependencies": {
     "@hono/node-server": "^1.14.1",
