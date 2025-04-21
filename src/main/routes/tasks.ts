@@ -44,8 +44,6 @@ tasks.get("/", async (c: Context) => {
       return c.json(errorResponse("No tasks found"), 404);
     }
 
-    console.log(tasks)
-
     return c.json(successResponse(tasks), 200);
   } catch (error) {
     console.error("Error fetching tasks: ", error);
