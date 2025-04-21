@@ -10,9 +10,9 @@ export type IGetAllTasksParams = void;
 
 /** 'GetAllTasks' return type */
 export interface IGetAllTasksResult {
-  created_at: Date;
+  created_at: string | null;
   description: string | null;
-  due_date: Date;
+  due_date: string | null;
   id: number;
   status: status;
   title: string;
@@ -24,12 +24,20 @@ export interface IGetAllTasksQuery {
   result: IGetAllTasksResult;
 }
 
-const getAllTasksIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT * FROM tasks ORDER BY created_at DESC"};
+const getAllTasksIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT\n  id,\n  title,\n  description,\n  status,\n  to_char(due_date, 'YYYY-MM-DD\"T\"HH24:MIZ') AS due_date,\n  to_char(created_at, 'YYYY-MM-DD\"T\"HH24:MIZ') AS created_at\nFROM tasks\nORDER BY created_at DESC"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT * FROM tasks ORDER BY created_at DESC
+ * SELECT
+ *   id,
+ *   title,
+ *   description,
+ *   status,
+ *   to_char(due_date, 'YYYY-MM-DD"T"HH24:MIZ') AS due_date,
+ *   to_char(created_at, 'YYYY-MM-DD"T"HH24:MIZ') AS created_at
+ * FROM tasks
+ * ORDER BY created_at DESC
  * ```
  */
 export const getAllTasks = new PreparedQuery<IGetAllTasksParams,IGetAllTasksResult>(getAllTasksIR);

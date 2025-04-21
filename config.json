@@ -12,7 +12,7 @@
   "db": {
     "host": "localhost",
     "user": "postgres",
-    "dbName": "tasks",
+    "dbName": "task_manager",
     "password": ""
   }
 }

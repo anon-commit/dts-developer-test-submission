@@ -1,5 +1,13 @@
 /* @name getAllTasks */
-SELECT * FROM tasks ORDER BY created_at DESC;
+SELECT
+  id,
+  title,
+  description,
+  status,
+  to_char(due_date, 'YYYY-MM-DD"T"HH24:MIZ') AS due_date,
+  to_char(created_at, 'YYYY-MM-DD"T"HH24:MIZ') AS created_at
+FROM tasks
+ORDER BY created_at DESC;
 
 /* @name findById */
 SELECT * FROM tasks WHERE id = :taskId!;
