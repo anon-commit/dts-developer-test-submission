@@ -24,7 +24,7 @@ export interface IGetAllTasksQuery {
   result: IGetAllTasksResult;
 }
 
-const getAllTasksIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT\n  id,\n  title,\n  description,\n  status,\n  to_char(due_date, 'YYYY-MM-DD\"T\"HH24:MIZ') AS due_date,\n  to_char(created_at, 'YYYY-MM-DD\"T\"HH24:MIZ') AS created_at\nFROM tasks\nORDER BY created_at DESC"};
+const getAllTasksIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT\n  id,\n  title,\n  description,\n  status,\n  to_char(due_date, 'YYYY-MM-DD\"T\"HH24:MIZ') AS due_date,\n  to_char(created_at, 'YYYY-MM-DD\"T\"HH24:MIZ') AS created_at\nFROM tasks\nORDER BY id DESC"};
 
 /**
  * Query generated from SQL:
@@ -37,7 +37,7 @@ const getAllTasksIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT\n 
  *   to_char(due_date, 'YYYY-MM-DD"T"HH24:MIZ') AS due_date,
  *   to_char(created_at, 'YYYY-MM-DD"T"HH24:MIZ') AS created_at
  * FROM tasks
- * ORDER BY created_at DESC
+ * ORDER BY id DESC
  * ```
  */
 export const getAllTasks = new PreparedQuery<IGetAllTasksParams,IGetAllTasksResult>(getAllTasksIR);
