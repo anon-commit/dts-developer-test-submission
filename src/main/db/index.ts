@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: [".env.local", ".env"] });
 
 const pool = new pg.Pool({
-  database: "tasks",
+  database: "task_manager",
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
   password: process.env.DB_PASSWORD,
