@@ -5,36 +5,26 @@ import {
   updateStatus,
   deleteTask,
   insertTask,
+  getTasksByCreatedDesc,
+  getTasksByStatusDesc,
+  getTasksByCreatedAsc,
+  getTasksByStatusAsc,
 } from "../queries/taskQueries.queries.js";
 import type {
   IFindByIdResult,
   IGetAllTasksResult,
   IUpdateStatusResult,
-  status,
+  IInsertTaskResult,
+  IGetTasksByCreatedDescParams,
+  IGetTasksByStatusDescParams,
+  IFindByIdParams,
+  IUpdateStatusParams,
+  IDeleteTaskParams,
+  IInsertTaskParams,
 } from "../queries/taskQueries.queries.js";
+import type { SortOrder } from "../util/types.js";
 
 class Task {
-  title: string;
-  status: status;
-  due_date: Date;
-  created_at: Date;
-  id?: number;
-  description?: string;
-
-  constructor(
-    title: string,
-    status: status = "TODO",
-    due_date: Date,
-    description?: string,
-    id?: number,
-  ) {
-    this.title = title;
-    this.status = status;
-    this.due_date = due_date;
-    this.description = description;
-    this.id = id;
-  }
-
   /**
    * Retrieves all tasks from the database, ordered by creation date in descending order.
    *
@@ -47,15 +37,59 @@ class Task {
   }
 
   /**
+   * Retrieves the next page of size `pageSize` from the database,
+   * ordered by creation date in ascending or descending order, based on `order`.
+   *
+   * @returns {Promise<IGetAllTasksResult>} - A promise that resolves to an array of tasks (will be empty if there are no tasks).
+   * @throws {Error} - Throws if the query fails.
+   */
+  static async getTasksByCreated(
+    sortOrder: SortOrder,
+    pageParams: IGetTasksByCreatedDescParams,
+  ): Promise<IGetAllTasksResult[]> {
+    let page: IGetAllTasksResult[];
+
+    if (sortOrder == "DESC") {
+      page = await getTasksByCreatedDesc.run(pageParams, pool);
+    } else {
+      page = await getTasksByCreatedAsc.run(pageParams, pool);
+    }
+
+    return page;
+  }
+
+  /**
+   * Retrieves the next page of size `pageSize` from the database,
+   * ordered by status in ascending or descending order, based on `order`.
+   *
+   * @returns {Promise<IGetAllTasksResult>} - A promise that resolves to an array of tasks (will be empty if there are no tasks).
+   * @throws {Error} - Throws if the query fails.
+   */
+  static async getTasksByStatus(
+    sortOrder: SortOrder,
+    pageParams: IGetTasksByStatusDescParams,
+  ): Promise<IGetAllTasksResult[]> {
+    let page: IGetAllTasksResult[];
+
+    if (sortOrder == "DESC") {
+      page = await getTasksByStatusDesc.run(pageParams, pool);
+    } else {
+      page = await getTasksByStatusAsc.run(pageParams, pool);
+    }
+
+    return page;
+  }
+
+  /**
    * Retrieves the task with id `id` from the database.
    * If a task with id `id` does not exist, null is returned.
    *
-   * @param {number} id - id of the task to retrieve.
+   * @param {IFindByIdParams} id - An object with one property: `taskId`, set to the value of the id of the task to retrieve.
    * @returns {Promise<IFindByIdResult | null>} - A promise that resolves to the task, or null if the task does not exist.
    * @throws {Error} - Throws if the query fails.
    */
-  static async findById(id: number): Promise<IFindByIdResult | null> {
-    const task = await findById.run({ taskId: id }, pool);
+  static async findById(id: IFindByIdParams): Promise<IFindByIdResult | null> {
+    const task = await findById.run(id, pool);
 
     if (task.length === 0) {
       return null;
@@ -66,19 +100,18 @@ class Task {
 
   /**
    * Updates the status of task with id `id` in the database.
+   * If a task with id `id` does not exist, null is returned.
    *
-   * @param {number} id - id of the task to update.
+   * @param {IUpdateStatusParams} params - An object with two properties:
+   *                                       `taskId`: the id of the task to update
+   *                                       `newStatus`: the new status that will be assigned to the task
    * @returns {Promise<IUpdateStatusResult | null>} - A promise that resolves to the updated status, or null if the task does not exist.
    * @throws {Error} - Throws if the query fails.
    */
   static async updateStatus(
-    id: number,
-    newStatus: status,
+    params: IUpdateStatusParams,
   ): Promise<IUpdateStatusResult | null> {
-    const result = await updateStatus.run(
-      { taskId: id, newStatus: newStatus },
-      pool,
-    );
+    const result = await updateStatus.run(params, pool);
 
     if (result.length === 0) {
       return null;
@@ -90,12 +123,12 @@ class Task {
   /**
    * Deletes task with id `id` from the database.
    *
-   * @param {number} id - id of the task to delete.
+   * @param {IDeleteTaskParams} id - An object with one property: `taskId`, set to the value of the id of the task to delete.
    * @returns {Promise<number>} - A promise that resolves to 1 to indicate success or 0 if the task does not exist.
    * @throws {Error} - Throws if the query fails.
    */
-  static async delete(id: number): Promise<number> {
-    const result = await deleteTask.run({ taskId: id }, pool);
+  static async delete(id: IDeleteTaskParams): Promise<number> {
+    const result = await deleteTask.run(id, pool);
 
     if (result.length === 0) {
       return 0;
@@ -107,29 +140,17 @@ class Task {
   /**
    * Inserts the task into the database.
    *
-   * @returns {Promise<Task>} - A promise that resolves to the newly inserted task.
+   * @param {IInsertTaskParams} params - An object with three properties:
+   *                                       `title`: the title of the task
+   *                                       `status`: the status of the task (one of 'TODO', 'IN_PROGRESS', 'DONE')
+   *                                       `description`: an optional description for the task
+   * @returns {Promise<IInsertTaskResult>} - A promise that resolves to the newly inserted task.
    * @throws {Error} - Throws if the query fails.
    */
-  async save(): Promise<Task> {
-    const rawResult = await insertTask.run(
-      {
-        title: this.title,
-        description: this.description,
-        status: this.status,
-        due_date: this.due_date,
-      },
-      pool,
-    );
+  static async save(params: IInsertTaskParams): Promise<IInsertTaskResult> {
+    const result = await insertTask.run(params, pool);
 
-    const result = rawResult[0];
-
-    return new Task(
-      result.title,
-      result.status,
-      result.due_date,
-      result.description ? result.description : undefined,
-      result.id,
-    );
+    return result[0];
   }
 }
 

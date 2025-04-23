@@ -2,7 +2,7 @@ import type { Context } from "hono";
 import { z } from "zod";
 import Task from "../models/task.js";
 import { Hono } from "hono";
-import { successResponse, errorResponse } from "../helpers/responseWrapper.js";
+import { successResponse, errorResponse } from "../util/responseWrappers.js";
 
 /*
  * Zod schemas
@@ -10,20 +10,22 @@ import { successResponse, errorResponse } from "../helpers/responseWrapper.js";
 const StatusEnum = z.enum(["TODO", "IN_PROGRESS", "DONE"]);
 
 const TaskIdParamSchema = z.object({
-  id: z.string().regex(/^\d+$/, "Task ID must be a number").transform(Number),
+  id: z.coerce.number({ message: "Task ID must be a number" }).min(1),
 });
+
+const DateSchema = z
+  .string()
+  .datetime({
+    message:
+      "Invalid due_date format. Dates must be supplied in ISO 8601 format with the UTC time zone designator.",
+  })
+  .transform((str) => new Date(str));
 
 const CreateTaskSchema = z.object({
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().optional(),
   status: StatusEnum.default("TODO"),
-  due_date: z
-    .string()
-    .datetime({
-      message:
-        "Invalid due_date format. Dates must be supplied in ISO 8601 format with the UTC time zone designator.",
-    })
-    .transform((str) => new Date(str)),
+  due_date: DateSchema,
 });
 
 const UpdateStatusSchema = z.object({
@@ -36,7 +38,7 @@ const tasks = new Hono();
  * GET /tasks
  * Retrieves all tasks.
  */
-tasks.get("/", async (c: Context) => {
+tasks.get("/all", async (c: Context) => {
   try {
     const tasks = await Task.getAll();
 
@@ -65,7 +67,7 @@ tasks.get("/:id", async (c: Context) => {
     }
     const { id } = idValidation.data;
 
-    const task = await Task.findById(id);
+    const task = await Task.findById({ taskId: id });
     if (!task) {
       return c.json(errorResponse("Task not found"), 404);
     }
@@ -102,10 +104,9 @@ tasks.post("/", async (c: Context) => {
       return c.json(errorResponse("due_date must be in the future"), 400);
     }
 
-    const newTask = new Task(title, status, due_date, description);
-    await newTask.save();
+    const task = await Task.save({ title, status, due_date, description });
 
-    return c.json(successResponse({ task: { ...newTask } }), 201);
+    return c.json(successResponse({ task: { ...task } }), 201);
   } catch (error) {
     console.error("Error creating task: ", error);
     return c.json(
@@ -140,7 +141,7 @@ tasks.patch("/status/:id", async (c: Context) => {
     const { id } = idValidation.data;
     const { status } = bodyValidation.data;
 
-    const result = await Task.updateStatus(id, status);
+    const result = await Task.updateStatus({ taskId: id, newStatus: status });
     if (!result) {
       return c.json(errorResponse("Task not found"), 404);
     }
@@ -167,9 +168,10 @@ tasks.delete("/:id", async (c: Context) => {
     if (!idValidation.success) {
       return c.json(errorResponse("ID must only contain integers"), 400);
     }
+
     const { id } = idValidation.data;
 
-    const result = await Task.delete(id);
+    const result = await Task.delete({ taskId: id });
     if (!result) {
       return c.json(errorResponse("Task not found"), 404);
     }
