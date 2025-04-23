@@ -14,7 +14,7 @@ export function errorResponse(message: string, errors?: {} | []) {
     return { success: false, message: message };
   }
   if (Array.isArray(errors)) {
-    return { success: false, message: message, data: errors };
+    return { success: false, message: message, errors: errors };
   }
   return { success: false, message: message, errors: { ...errors } };
 }
