@@ -2,14 +2,11 @@ import { serve } from "@hono/node-server";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { Hono } from "hono";
 import { logger } from "hono/logger";
-import { connectDB } from "./db";
 import tasks from "./routes/tasks";
 import type { Context } from "hono";
 import { ZodError } from "zod";
 import { errorResponse } from "./util/responseWrappers";
 import { TaskNotFoundError } from "./util/errors.js";
-
-await connectDB();
 
 const app = new Hono();
 
@@ -38,9 +35,12 @@ app.onError((err, c: Context) => {
   if (err instanceof TaskNotFoundError) {
     return c.json(errorResponse(err.message), 404);
   }
+  if (err instanceof SyntaxError) {
+    return c.json(errorResponse("Received invalid JSON."), 404);
+  }
 
   console.error(err);
-  return c.json("Server side error", 500);
+  return c.json(errorResponse("Server side error"), 500);
 });
 
 serve(
