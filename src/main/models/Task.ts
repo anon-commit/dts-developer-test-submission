@@ -23,16 +23,30 @@ import type {
   IInsertTaskParams,
 } from "../queries/taskQueries.queries.js";
 import type { SortOrder } from "../util/types.js";
+import { TaskNotFoundError } from "../util/errors.js";
+
+/*
+ * Any queries that should return tasks will throw a TaskNotFoundError when there
+ * are no tasks to return.
+ *
+ * Errors are handled at the top level in `index.ts` with the `app.onError` handler,
+ * so try/catch blocks are not needed.
+ */
 
 class Task {
   /**
    * Retrieves all tasks from the database, ordered by creation date in descending order.
    *
-   * @returns {Promise<IGetAllTasksResult[]>} - A promise that resolves to an array of all tasks (will be empty if there are no tasks).
-   * @throws {Error} - Throws if the query fails.
+   * @returns {Promise<IGetAllTasksResult[]>} - A promise that resolves to an array of all tasks.
+   * @throws {TaskNotFoundError} - Throws if no tasks exist.
    */
   static async getAll(): Promise<IGetAllTasksResult[]> {
     const allTasks = await getAllTasks.run(undefined, pool);
+
+    if (allTasks.length === 0) {
+      throw new TaskNotFoundError();
+    }
+
     return allTasks;
   }
 
@@ -82,17 +96,16 @@ class Task {
 
   /**
    * Retrieves the task with id `id` from the database.
-   * If a task with id `id` does not exist, null is returned.
    *
    * @param {IFindByIdParams} id - An object with one property: `taskId`, set to the value of the id of the task to retrieve.
-   * @returns {Promise<IFindByIdResult | null>} - A promise that resolves to the task, or null if the task does not exist.
-   * @throws {Error} - Throws if the query fails.
+   * @returns {Promise<IFindByIdResult>} - A promise that resolves to the task.
+   * @throws {TaskNotFoundError} - Throws if the task does not exist.
    */
-  static async findById(id: IFindByIdParams): Promise<IFindByIdResult | null> {
+  static async findById(id: IFindByIdParams): Promise<IFindByIdResult> {
     const task = await findById.run(id, pool);
 
     if (task.length === 0) {
-      return null;
+      throw new TaskNotFoundError();
     }
 
     return task[0];
@@ -100,21 +113,20 @@ class Task {
 
   /**
    * Updates the status of task with id `id` in the database.
-   * If a task with id `id` does not exist, null is returned.
    *
    * @param {IUpdateStatusParams} params - An object with two properties:
    *                                       `taskId`: the id of the task to update
    *                                       `newStatus`: the new status that will be assigned to the task
-   * @returns {Promise<IUpdateStatusResult | null>} - A promise that resolves to the updated status, or null if the task does not exist.
-   * @throws {Error} - Throws if the query fails.
+   * @returns {Promise<IUpdateStatusResult>} - A promise that resolves to the updated status.
+   * @throws {TaskNotFoundError} - Throws if the the task does not exist.
    */
   static async updateStatus(
     params: IUpdateStatusParams,
-  ): Promise<IUpdateStatusResult | null> {
+  ): Promise<IUpdateStatusResult> {
     const result = await updateStatus.run(params, pool);
 
     if (result.length === 0) {
-      return null;
+      throw new TaskNotFoundError();
     }
 
     return result[0];
@@ -124,14 +136,14 @@ class Task {
    * Deletes task with id `id` from the database.
    *
    * @param {IDeleteTaskParams} id - An object with one property: `taskId`, set to the value of the id of the task to delete.
-   * @returns {Promise<number>} - A promise that resolves to 1 to indicate success or 0 if the task does not exist.
-   * @throws {Error} - Throws if the query fails.
+   * @returns {Promise<number>} - A promise that resolves to 1 to indicate success.
+   * @throws {TaskNotFoundError} - Throws if the task does not exist.
    */
   static async delete(id: IDeleteTaskParams): Promise<number> {
     const result = await deleteTask.run(id, pool);
 
     if (result.length === 0) {
-      return 0;
+      throw new TaskNotFoundError();
     }
 
     return 1;
@@ -145,7 +157,6 @@ class Task {
    *                                       `status`: the status of the task (one of 'TODO', 'IN_PROGRESS', 'DONE')
    *                                       `description`: an optional description for the task
    * @returns {Promise<IInsertTaskResult>} - A promise that resolves to the newly inserted task.
-   * @throws {Error} - Throws if the query fails.
    */
   static async save(params: IInsertTaskParams): Promise<IInsertTaskResult> {
     const result = await insertTask.run(params, pool);

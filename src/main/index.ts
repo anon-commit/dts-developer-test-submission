@@ -4,6 +4,10 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { connectDB } from "./db";
 import tasks from "./routes/tasks";
+import type { Context } from "hono";
+import { ZodError } from "zod";
+import { errorResponse } from "./util/responseWrappers";
+import { TaskNotFoundError } from "./util/errors.js";
 
 await connectDB();
 
@@ -17,6 +21,27 @@ app.get("/", (c) => {
 });
 
 app.route("/tasks", tasks);
+
+app.onError((err, c: Context) => {
+  if (err instanceof ZodError) {
+    const messages = err.errors.map((cur) => {
+      return { param: cur.path.toString(), message: cur.message };
+    });
+    return c.json(
+      errorResponse(
+        "Invalid parameters. See errors property for details.",
+        messages,
+      ),
+      400,
+    );
+  }
+  if (err instanceof TaskNotFoundError) {
+    return c.json(errorResponse(err.message), 404);
+  }
+
+  console.error(err);
+  return c.json("Server side error", 500);
+});
 
 serve(
   {

@@ -1,56 +1,30 @@
 import type { Context } from "hono";
-import { z } from "zod";
 import Task from "../models/task.js";
 import { Hono } from "hono";
-import { successResponse, errorResponse } from "../util/responseWrappers.js";
-
-/*
- * Zod schemas
- */
-const StatusEnum = z.enum(["TODO", "IN_PROGRESS", "DONE"]);
-
-const TaskIdParamSchema = z.object({
-  id: z.coerce.number({ message: "Task ID must be a number" }).min(1),
-});
-
-const DateSchema = z
-  .string()
-  .datetime({
-    message:
-      "Invalid due_date format. Dates must be supplied in ISO 8601 format with the UTC time zone designator.",
-  })
-  .transform((str) => new Date(str));
-
-const CreateTaskSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
-  description: z.string().optional(),
-  status: StatusEnum.default("TODO"),
-  due_date: DateSchema,
-});
-
-const UpdateStatusSchema = z.object({
-  status: StatusEnum,
-});
+import { successResponse } from "../util/responseWrappers.js";
+import {
+  TaskIdParamSchema,
+  CreateTaskSchema,
+  UpdateStatusSchema,
+} from "./tasks.schemas.js";
 
 const tasks = new Hono();
+
+/*
+ * All routes that take parameters must validate those parameters using Zod schemas.
+ * If validation fails, an error must be thrown with a message sourced from the given Zod schema.
+ *
+ * Errors are handled at the top level in `index.ts` with the `app.onError` handler,
+ * so try/catch blocks are not needed.
+ */
 
 /**
  * GET /tasks
  * Retrieves all tasks.
  */
 tasks.get("/all", async (c: Context) => {
-  try {
-    const tasks = await Task.getAll();
-
-    if (tasks.length === 0) {
-      return c.json(errorResponse("No tasks found"), 404);
-    }
-
-    return c.json(successResponse(tasks), 200);
-  } catch (error) {
-    console.error("Error fetching tasks: ", error);
-    return c.json(errorResponse("Failed to retrieve tasks"), 500);
-  }
+  const tasks = await Task.getAll();
+  return c.json(successResponse(tasks), 200);
 });
 
 /**
@@ -58,28 +32,11 @@ tasks.get("/all", async (c: Context) => {
  * Retrieves a single task by its ID.
  */
 tasks.get("/:id", async (c: Context) => {
-  try {
-    const idValidation = TaskIdParamSchema.safeParse({
-      id: c.req.param("id"),
-    });
-    if (!idValidation.success) {
-      return c.json(errorResponse("ID must only contain integers"), 400);
-    }
-    const { id } = idValidation.data;
-
-    const task = await Task.findById({ taskId: id });
-    if (!task) {
-      return c.json(errorResponse("Task not found"), 404);
-    }
-
-    return c.json(successResponse(task), 200);
-  } catch (error) {
-    console.error("Error retrieving task: ", error);
-    return c.json(
-      errorResponse("Failed to retrieve task (server side error)"),
-      500,
-    );
-  }
+  const { id } = TaskIdParamSchema.parse({
+    id: c.req.param("id"),
+  });
+  const task = await Task.findById({ taskId: id });
+  return c.json(successResponse(task), 200);
 });
 
 /**
@@ -87,33 +44,12 @@ tasks.get("/:id", async (c: Context) => {
  * Creates a new task.
  */
 tasks.post("/", async (c: Context) => {
-  try {
-    const body = await c.req.json();
-    const bodyValidation = CreateTaskSchema.safeParse(body);
+  const body = await c.req.json();
+  const { title, status, due_date, description } = CreateTaskSchema.parse(body);
 
-    if (!bodyValidation.success) {
-      return c.json(
-        errorResponse("Incorrect task format", bodyValidation.error.issues),
-        400,
-      );
-    }
+  const task = await Task.save({ title, status, due_date, description });
 
-    const { title, status, due_date, description } = bodyValidation.data;
-
-    if (due_date < new Date()) {
-      return c.json(errorResponse("due_date must be in the future"), 400);
-    }
-
-    const task = await Task.save({ title, status, due_date, description });
-
-    return c.json(successResponse({ task: { ...task } }), 201);
-  } catch (error) {
-    console.error("Error creating task: ", error);
-    return c.json(
-      errorResponse("Failed to create task (server side error"),
-      500,
-    );
-  }
+  return c.json(successResponse({ task: { ...task } }), 201);
 });
 
 /**
@@ -121,39 +57,13 @@ tasks.post("/", async (c: Context) => {
  * Updates the status of an existing task.
  */
 tasks.patch("/status/:id", async (c: Context) => {
-  try {
-    const idValidation = TaskIdParamSchema.safeParse({ id: c.req.param("id") });
-    if (!idValidation.success) {
-      return c.json(errorResponse("ID must only contain integers"), 400);
-    }
+  const { id } = TaskIdParamSchema.parse({ id: c.req.param("id") });
+  const body = await c.req.json();
+  const { status } = UpdateStatusSchema.parse(body);
 
-    const body = await c.req.json();
-    const bodyValidation = UpdateStatusSchema.safeParse(body);
-    if (!bodyValidation.success) {
-      return c.json(
-        errorResponse(
-          "status must be one of the following: 'TODO', 'IN_PROGRESS', 'DONE'",
-        ),
-        400,
-      );
-    }
+  const result = await Task.updateStatus({ taskId: id, newStatus: status });
 
-    const { id } = idValidation.data;
-    const { status } = bodyValidation.data;
-
-    const result = await Task.updateStatus({ taskId: id, newStatus: status });
-    if (!result) {
-      return c.json(errorResponse("Task not found"), 404);
-    }
-
-    return c.json(successResponse({ new_status: result.status }), 200);
-  } catch (error) {
-    console.error("Error updating task: ", error);
-    return c.json(
-      errorResponse("Failed to update task status (server side error)"),
-      500,
-    );
-  }
+  return c.json(successResponse({ new_status: result }), 200);
 });
 
 /**
@@ -161,29 +71,13 @@ tasks.patch("/status/:id", async (c: Context) => {
  * Deletes a task by its ID.
  */
 tasks.delete("/:id", async (c: Context) => {
-  try {
-    const idValidation = TaskIdParamSchema.safeParse({
-      id: c.req.param("id"),
-    });
-    if (!idValidation.success) {
-      return c.json(errorResponse("ID must only contain integers"), 400);
-    }
+  const { id } = TaskIdParamSchema.parse({
+    id: c.req.param("id"),
+  });
 
-    const { id } = idValidation.data;
+  await Task.delete({ taskId: id });
 
-    const result = await Task.delete({ taskId: id });
-    if (!result) {
-      return c.json(errorResponse("Task not found"), 404);
-    }
-
-    return c.body(null, 204);
-  } catch (error) {
-    console.error("Error deleting task: ", error);
-    return c.json(
-      errorResponse("Failed to delete task (server side error)"),
-      500,
-    );
-  }
+  return c.body(null, 204);
 });
 
 export default tasks;
