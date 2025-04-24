@@ -29,6 +29,8 @@ import { TaskNotFoundError } from "../util/errors.js";
  * Any queries that should return tasks will throw a TaskNotFoundError when there
  * are no tasks to return.
  *
+ * pgtyped's <query>.run() method can also throw if a query fails for some reason.
+ *
  * Errors are handled at the top level in `index.ts` with the `app.onError` handler,
  * so try/catch blocks are not needed.
  */
@@ -52,7 +54,7 @@ class Task {
 
   /**
    * Retrieves the next page of size `pageSize` from the database,
-   * ordered by creation date in ascending or descending order, based on `order`.
+   * ordered by creation date in ascending or descending order, based on `sortOrder`.
    *
    * @returns {Promise<IGetAllTasksResult>} - A promise that resolves to an array of tasks (will be empty if there are no tasks).
    * @throws {Error} - Throws if the query fails.
@@ -74,7 +76,7 @@ class Task {
 
   /**
    * Retrieves the next page of size `pageSize` from the database,
-   * ordered by status in ascending or descending order, based on `order`.
+   * ordered by status in ascending or descending order, based on `sortOrder`.
    *
    * @returns {Promise<IGetAllTasksResult>} - A promise that resolves to an array of tasks (will be empty if there are no tasks).
    * @throws {Error} - Throws if the query fails.

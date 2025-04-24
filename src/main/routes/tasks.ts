@@ -1,4 +1,6 @@
 import type { Context } from "hono";
+import type { IGetAllTasksResult } from "../queries/taskQueries.queries.js";
+import type { ByStatusCursor, ByCreatedCursor } from "../util/types.js";
 import Task from "../models/task.js";
 import { Hono } from "hono";
 import { successResponse } from "../util/responseWrappers.js";
@@ -6,16 +8,22 @@ import {
   TaskIdParamSchema,
   CreateTaskSchema,
   UpdateStatusSchema,
+  PaginationQuerySchema,
+  ByStatusCursorSchema,
+  ByCreatedCursorSchema,
 } from "./tasks.schemas.js";
 
 const tasks = new Hono();
 
 /*
- * All routes that take parameters must validate those parameters using Zod schemas.
- * If validation fails, an error must be thrown with a message sourced from the given Zod schema.
+ * All routes that take parameters validate those parameters using Zod schemas.
+ * Zod throws a `ZodError` when validation fails.
  *
  * Errors are handled at the top level in `index.ts` with the `app.onError` handler,
  * so try/catch blocks are not needed.
+ *
+ * When validation fails, a helpful error message (sourced from the given Zod schema)
+ * is sent to the browser, in the standard response format defined in `./util/responseWrappers.ts`.
  */
 
 /**
@@ -25,6 +33,103 @@ const tasks = new Hono();
 tasks.get("/all", async (c: Context) => {
   const tasks = await Task.getAll();
   return c.json(successResponse(tasks), 200);
+});
+
+/**
+ * GET /tasks/page
+ * Retrieves tasks with pagination using cursor-based pagination.
+ * Query parameters:
+ * - sortBy: 'created' or 'status'
+ * - sortOrder: 'ASC' or 'DESC'
+ * - pageSize: number
+ * - cursor: base64 encoded cursor for pagination (not required for first page)
+ */
+// TODO: This route is VERY messy. Refactor this to reduce repeated logic.
+tasks.get("/page", async (c: Context) => {
+  const queryValidation = PaginationQuerySchema.parse(c.req.query());
+
+  let { sortBy, sortOrder, pageSize, cursor } = queryValidation;
+
+  let page: IGetAllTasksResult[];
+  let nextCursor: string | null;
+
+  if (!cursor) {
+    if (sortBy === "created") {
+      page = await Task.getTasksByCreated(sortOrder, {
+        pageSize: pageSize,
+      });
+
+      const lastTask = page[page.length - 1];
+
+      const byCreatedCursor: ByCreatedCursor = {
+        prevId: lastTask.id,
+        prevCreatedAt: new Date(lastTask.created_at),
+      };
+
+      nextCursor = Buffer.from(JSON.stringify(byCreatedCursor)).toString(
+        "base64",
+      );
+    } else {
+      page = await Task.getTasksByStatus(sortOrder, {
+        pageSize: pageSize,
+      });
+
+      const lastTask = page[page.length - 1];
+
+      const statusCursor: ByStatusCursor = {
+        prevStatus: lastTask.status,
+        prevId: lastTask.id,
+      };
+
+      nextCursor = Buffer.from(JSON.stringify(statusCursor)).toString("base64");
+    }
+
+    return c.json(successResponse(page, { cursor: nextCursor }), 200);
+  }
+
+  // Decode cursor from base64, then parse it to JSON
+  let prevCursor = JSON.parse(Buffer.from(cursor, "base64").toString());
+
+  if (sortBy === "created") {
+    prevCursor = ByCreatedCursorSchema.parse(prevCursor);
+
+    const params = { ...prevCursor, pageSize: pageSize };
+
+    page = await Task.getTasksByCreated(sortOrder, params);
+  } else {
+    prevCursor = ByStatusCursorSchema.parse(prevCursor);
+    const params = { ...prevCursor, pageSize: pageSize };
+
+    page = await Task.getTasksByStatus(sortOrder, params);
+  }
+
+  const hasMore = page.length === pageSize;
+
+  if (hasMore) {
+    const lastTask = page[page.length - 1];
+
+    if (sortBy === "created") {
+      const byCreatedCursor: ByCreatedCursor = {
+        prevId: lastTask.id,
+        prevCreatedAt: new Date(lastTask.created_at),
+      };
+
+      nextCursor = Buffer.from(JSON.stringify(byCreatedCursor)).toString(
+        "base64",
+      );
+    } else {
+      const statusCursor: ByStatusCursor = {
+        prevStatus: lastTask.status,
+        prevId: lastTask.id,
+      };
+
+      nextCursor = Buffer.from(JSON.stringify(statusCursor)).toString("base64");
+    }
+  } else {
+    nextCursor = null;
+  }
+
+  return c.json(successResponse(page, { cursor: nextCursor }), 200);
 });
 
 /**
@@ -77,7 +182,7 @@ tasks.delete("/:id", async (c: Context) => {
 
   await Task.delete({ taskId: id });
 
-  return c.body(null, 204);
+  return c.json(successResponse(), 200);
 });
 
 export default tasks;
