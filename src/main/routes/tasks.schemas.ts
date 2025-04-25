@@ -52,9 +52,11 @@ export const ByDueDateCursorSchema = z.object({
   prevDueDate: DateSchema,
 });
 
+export const SortOrderSchema = z.enum(["ASC", "DESC"]).default("DESC")
+
 export const PaginationQuerySchema = z.object({
   sortBy: z.enum(["created", "status", "dueDate"]).default("created"),
-  sortOrder: z.enum(["ASC", "DESC"]).default("DESC"),
+  sortOrder: SortOrderSchema,
   pageSize: z.coerce
     .number({ message: "Page size is required must be a number" })
     .int({ message: "Page size must be an integer" }),
