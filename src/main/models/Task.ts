@@ -24,7 +24,6 @@ import type {
   IInsertTaskParams,
   IGetTasksByDueDateDescParams,
 } from "../queries/taskQueries.queries.js";
-import type { SortOrder } from "../util/types.js";
 import { TaskNotFoundError } from "../util/errors.js";
 
 /*
