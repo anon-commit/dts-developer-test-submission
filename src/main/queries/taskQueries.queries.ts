@@ -37,6 +37,31 @@ const getAllTasksIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT * 
 export const getAllTasks = new PreparedQuery<IGetAllTasksParams,IGetAllTasksResult>(getAllTasksIR);
 
 
+/** 'GetNumTasks' parameters type */
+export type IGetNumTasksParams = void;
+
+/** 'GetNumTasks' return type */
+export interface IGetNumTasksResult {
+  count: string;
+}
+
+/** 'GetNumTasks' query type */
+export interface IGetNumTasksQuery {
+  params: IGetNumTasksParams;
+  result: IGetNumTasksResult;
+}
+
+const getNumTasksIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT COUNT(*) AS \"count!\" FROM tasks"};
+
+/**
+ * Query generated from SQL:
+ * ```
+ * SELECT COUNT(*) AS "count!" FROM tasks
+ * ```
+ */
+export const getNumTasks = new PreparedQuery<IGetNumTasksParams,IGetNumTasksResult>(getNumTasksIR);
+
+
 /** 'GetTasksByCreatedDesc' parameters type */
 export interface IGetTasksByCreatedDescParams {
   pageSize: NumberOrString;

@@ -1,6 +1,9 @@
 /* @name getAllTasks */
 SELECT * FROM tasks ORDER BY created_at DESC, id DESC;
 
+/* @name getNumTasks */
+SELECT COUNT(*) AS "count!" FROM tasks;
+
 /* @name getTasksByCreatedDesc */
 SELECT *
 FROM tasks

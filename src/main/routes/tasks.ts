@@ -29,8 +29,17 @@ const tasks = new Hono();
  * Retrieves all tasks.
  */
 tasks.get("/all", async (c: Context) => {
-  const tasks = await Task.getAll();
-  return c.json(successResponse(tasks), 200);
+  const allTasks = await Task.getAll();
+  return c.json(successResponse(allTasks), 200);
+});
+
+/**
+ * GET /count
+ * Retrieves the number of tasks.
+ */
+tasks.get("/count", async (c: Context) => {
+  const numTasks = await Task.getNumTasks();
+  return c.json(successResponse({ count: numTasks }), 200);
 });
 
 /**
