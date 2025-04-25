@@ -71,6 +71,10 @@ class Task {
       page = await getTasksByCreatedAsc.run(pageParams, pool);
     }
 
+    if (page.length === 0) {
+      throw new TaskNotFoundError();
+    }
+
     return page;
   }
 
@@ -91,6 +95,10 @@ class Task {
       page = await getTasksByStatusDesc.run(pageParams, pool);
     } else {
       page = await getTasksByStatusAsc.run(pageParams, pool);
+    }
+
+    if (page.length === 0) {
+      throw new TaskNotFoundError();
     }
 
     return page;

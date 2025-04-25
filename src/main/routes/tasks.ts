@@ -1,6 +1,5 @@
 import type { Context } from "hono";
-import type { IGetAllTasksResult } from "../queries/taskQueries.queries.js";
-import type { ByStatusCursor, ByCreatedCursor } from "../util/types.js";
+import type { IGetTasksByStatusDescParams as IPageParams } from "../queries/taskQueries.queries.js";
 import Task from "../models/task.js";
 import { Hono } from "hono";
 import { successResponse } from "../util/responseWrappers.js";
@@ -9,9 +8,8 @@ import {
   CreateTaskSchema,
   UpdateStatusSchema,
   PaginationQuerySchema,
-  ByStatusCursorSchema,
-  ByCreatedCursorSchema,
 } from "./tasks.schemas.js";
+import * as pagination from "../util/pagination.js";
 
 const tasks = new Hono();
 
@@ -44,92 +42,33 @@ tasks.get("/all", async (c: Context) => {
  * - pageSize: number
  * - cursor: base64 encoded cursor for pagination (not required for first page)
  */
-// TODO: This route is VERY messy. Refactor this to reduce repeated logic.
 tasks.get("/page", async (c: Context) => {
   const queryValidation = PaginationQuerySchema.parse(c.req.query());
-
   let { sortBy, sortOrder, pageSize, cursor } = queryValidation;
 
-  let page: IGetAllTasksResult[];
-  let nextCursor: string | null;
+  const sortStrat = pagination.strategies[sortBy];
+
+  let params: IPageParams;
 
   if (!cursor) {
-    if (sortBy === "created") {
-      page = await Task.getTasksByCreated(sortOrder, {
-        pageSize: pageSize,
-      });
-
-      const lastTask = page[page.length - 1];
-
-      const byCreatedCursor: ByCreatedCursor = {
-        prevId: lastTask.id,
-        prevCreatedAt: new Date(lastTask.created_at),
-      };
-
-      nextCursor = Buffer.from(JSON.stringify(byCreatedCursor)).toString(
-        "base64",
-      );
-    } else {
-      page = await Task.getTasksByStatus(sortOrder, {
-        pageSize: pageSize,
-      });
-
-      const lastTask = page[page.length - 1];
-
-      const statusCursor: ByStatusCursor = {
-        prevStatus: lastTask.status,
-        prevId: lastTask.id,
-      };
-
-      nextCursor = Buffer.from(JSON.stringify(statusCursor)).toString("base64");
-    }
-
-    return c.json(successResponse(page, { cursor: nextCursor }), 200);
-  }
-
-  // Decode cursor from base64, then parse it to JSON
-  let prevCursor = JSON.parse(Buffer.from(cursor, "base64").toString());
-
-  if (sortBy === "created") {
-    prevCursor = ByCreatedCursorSchema.parse(prevCursor);
-
-    const params = { ...prevCursor, pageSize: pageSize };
-
-    page = await Task.getTasksByCreated(sortOrder, params);
+    params = { pageSize };
   } else {
-    prevCursor = ByStatusCursorSchema.parse(prevCursor);
-    const params = { ...prevCursor, pageSize: pageSize };
-
-    page = await Task.getTasksByStatus(sortOrder, params);
+    const decodedCursor = pagination.decodeCursor(cursor);
+    const validatedCursor = sortStrat.cursorSchema.parse(decodedCursor);
+    params = { ...validatedCursor, pageSize };
   }
 
-  const hasMore = page.length === pageSize;
+  const page = await sortStrat.getTasks(sortOrder, params);
 
-  if (hasMore) {
+  const nextPageExists = page.length === pageSize;
+  let nextCursor: string | null = null;
+  if (nextPageExists) {
     const lastTask = page[page.length - 1];
-
-    if (sortBy === "created") {
-      const byCreatedCursor: ByCreatedCursor = {
-        prevId: lastTask.id,
-        prevCreatedAt: new Date(lastTask.created_at),
-      };
-
-      nextCursor = Buffer.from(JSON.stringify(byCreatedCursor)).toString(
-        "base64",
-      );
-    } else {
-      const statusCursor: ByStatusCursor = {
-        prevStatus: lastTask.status,
-        prevId: lastTask.id,
-      };
-
-      nextCursor = Buffer.from(JSON.stringify(statusCursor)).toString("base64");
-    }
-  } else {
-    nextCursor = null;
+    const cursorObj = sortStrat.getNextCursor(lastTask);
+    nextCursor = pagination.encodeCursor(cursorObj);
   }
 
-  return c.json(successResponse(page, { cursor: nextCursor }), 200);
+  return c.json(successResponse({ tasks: page, nextCursor }), 200);
 });
 
 /**

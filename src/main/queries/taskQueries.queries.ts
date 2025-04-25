@@ -12,9 +12,9 @@ export type IGetAllTasksParams = void;
 
 /** 'GetAllTasks' return type */
 export interface IGetAllTasksResult {
-  created_at: string;
+  created_at: Date;
   description: string | null;
-  due_date: string;
+  due_date: Date;
   id: number;
   status: status;
   title: string;
@@ -26,20 +26,12 @@ export interface IGetAllTasksQuery {
   result: IGetAllTasksResult;
 }
 
-const getAllTasksIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT\n  id,\n  title,\n  description,\n  status,\n  to_char(due_date, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"due_date!\",\n  to_char(created_at, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"created_at!\"\nFROM tasks\nORDER BY created_at DESC, id DESC"};
+const getAllTasksIR: any = {"usedParamSet":{},"params":[],"statement":"SELECT * FROM tasks ORDER BY created_at DESC, id DESC"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT
- *   id,
- *   title,
- *   description,
- *   status,
- *   to_char(due_date, 'YYYY-MM-DD"T"HH24:MIZ') AS "due_date!",
- *   to_char(created_at, 'YYYY-MM-DD"T"HH24:MIZ') AS "created_at!"
- * FROM tasks
- * ORDER BY created_at DESC, id DESC
+ * SELECT * FROM tasks ORDER BY created_at DESC, id DESC
  * ```
  */
 export const getAllTasks = new PreparedQuery<IGetAllTasksParams,IGetAllTasksResult>(getAllTasksIR);
@@ -54,9 +46,9 @@ export interface IGetTasksByCreatedDescParams {
 
 /** 'GetTasksByCreatedDesc' return type */
 export interface IGetTasksByCreatedDescResult {
-  created_at: string;
+  created_at: Date;
   description: string | null;
-  due_date: string;
+  due_date: Date;
   id: number;
   status: status;
   title: string;
@@ -68,18 +60,12 @@ export interface IGetTasksByCreatedDescQuery {
   result: IGetTasksByCreatedDescResult;
 }
 
-const getTasksByCreatedDescIR: any = {"usedParamSet":{"prevCreatedAt":true,"prevId":true,"pageSize":true},"params":[{"name":"prevCreatedAt","required":false,"transform":{"type":"scalar"},"locs":[{"a":195,"b":208},{"a":251,"b":264},{"a":283,"b":296}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":307,"b":313}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":358,"b":367}]}],"statement":"SELECT\n  id,\n  title,\n  description,\n  status,\n  to_char(due_date, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"due_date!\",\n  to_char(created_at, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"created_at!\"\nFROM tasks\nWHERE (CAST(:prevCreatedAt AS timestamptz) IS NULL OR (created_at < :prevCreatedAt OR (created_at = :prevCreatedAt AND id < :prevId)))\nORDER BY created_at DESC, id DESC\nLIMIT :pageSize!"};
+const getTasksByCreatedDescIR: any = {"usedParamSet":{"prevCreatedAt":true,"prevId":true,"pageSize":true},"params":[{"name":"prevCreatedAt","required":false,"transform":{"type":"scalar"},"locs":[{"a":32,"b":45},{"a":88,"b":101},{"a":120,"b":133}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":144,"b":150}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":195,"b":204}]}],"statement":"SELECT *\nFROM tasks\nWHERE (CAST(:prevCreatedAt AS timestamptz) IS NULL OR (created_at < :prevCreatedAt OR (created_at = :prevCreatedAt AND id < :prevId)))\nORDER BY created_at DESC, id DESC\nLIMIT :pageSize!"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT
- *   id,
- *   title,
- *   description,
- *   status,
- *   to_char(due_date, 'YYYY-MM-DD"T"HH24:MIZ') AS "due_date!",
- *   to_char(created_at, 'YYYY-MM-DD"T"HH24:MIZ') AS "created_at!"
+ * SELECT *
  * FROM tasks
  * WHERE (CAST(:prevCreatedAt AS timestamptz) IS NULL OR (created_at < :prevCreatedAt OR (created_at = :prevCreatedAt AND id < :prevId)))
  * ORDER BY created_at DESC, id DESC
@@ -98,9 +84,9 @@ export interface IGetTasksByCreatedAscParams {
 
 /** 'GetTasksByCreatedAsc' return type */
 export interface IGetTasksByCreatedAscResult {
-  created_at: string;
+  created_at: Date;
   description: string | null;
-  due_date: string;
+  due_date: Date;
   id: number;
   status: status;
   title: string;
@@ -112,18 +98,12 @@ export interface IGetTasksByCreatedAscQuery {
   result: IGetTasksByCreatedAscResult;
 }
 
-const getTasksByCreatedAscIR: any = {"usedParamSet":{"prevCreatedAt":true,"prevId":true,"pageSize":true},"params":[{"name":"prevCreatedAt","required":false,"transform":{"type":"scalar"},"locs":[{"a":195,"b":208},{"a":251,"b":264},{"a":283,"b":296}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":307,"b":313}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":356,"b":365}]}],"statement":"SELECT\n  id,\n  title,\n  description,\n  status,\n  to_char(due_date, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"due_date!\",\n  to_char(created_at, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"created_at!\"\nFROM tasks\nWHERE (CAST(:prevCreatedAt as timestamptz) IS NULL OR (created_at > :prevCreatedAt OR (created_at = :prevCreatedAt AND id > :prevId)))\nORDER BY created_at ASC, id ASC\nLIMIT :pageSize!"};
+const getTasksByCreatedAscIR: any = {"usedParamSet":{"prevCreatedAt":true,"prevId":true,"pageSize":true},"params":[{"name":"prevCreatedAt","required":false,"transform":{"type":"scalar"},"locs":[{"a":32,"b":45},{"a":88,"b":101},{"a":120,"b":133}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":144,"b":150}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":193,"b":202}]}],"statement":"SELECT *\nFROM tasks\nWHERE (CAST(:prevCreatedAt as timestamptz) IS NULL OR (created_at > :prevCreatedAt OR (created_at = :prevCreatedAt AND id > :prevId)))\nORDER BY created_at ASC, id ASC\nLIMIT :pageSize!"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT
- *   id,
- *   title,
- *   description,
- *   status,
- *   to_char(due_date, 'YYYY-MM-DD"T"HH24:MIZ') AS "due_date!",
- *   to_char(created_at, 'YYYY-MM-DD"T"HH24:MIZ') AS "created_at!"
+ * SELECT *
  * FROM tasks
  * WHERE (CAST(:prevCreatedAt as timestamptz) IS NULL OR (created_at > :prevCreatedAt OR (created_at = :prevCreatedAt AND id > :prevId)))
  * ORDER BY created_at ASC, id ASC
@@ -142,9 +122,9 @@ export interface IGetTasksByDuedateDescParams {
 
 /** 'GetTasksByDuedateDesc' return type */
 export interface IGetTasksByDuedateDescResult {
-  created_at: string;
+  created_at: Date;
   description: string | null;
-  due_date: string;
+  due_date: Date;
   id: number;
   status: status;
   title: string;
@@ -156,18 +136,12 @@ export interface IGetTasksByDuedateDescQuery {
   result: IGetTasksByDuedateDescResult;
 }
 
-const getTasksByDuedateDescIR: any = {"usedParamSet":{"prevDuedate":true,"prevId":true,"pageSize":true},"params":[{"name":"prevDuedate","required":false,"transform":{"type":"scalar"},"locs":[{"a":195,"b":206},{"a":247,"b":258},{"a":275,"b":286}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":297,"b":303}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":346,"b":355}]}],"statement":"SELECT\n  id,\n  title,\n  description,\n  status,\n  to_char(due_date, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"due_date!\",\n  to_char(created_at, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"created_at!\"\nFROM tasks\nWHERE (CAST(:prevDuedate AS timestamptz) IS NULL OR (due_date < :prevDuedate OR (due_date = :prevDuedate AND id < :prevId)))\nORDER BY due_date DESC, id DESC\nLIMIT :pageSize!"};
+const getTasksByDuedateDescIR: any = {"usedParamSet":{"prevDuedate":true,"prevId":true,"pageSize":true},"params":[{"name":"prevDuedate","required":false,"transform":{"type":"scalar"},"locs":[{"a":32,"b":43},{"a":84,"b":95},{"a":112,"b":123}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":134,"b":140}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":183,"b":192}]}],"statement":"SELECT *\nFROM tasks\nWHERE (CAST(:prevDuedate AS timestamptz) IS NULL OR (due_date < :prevDuedate OR (due_date = :prevDuedate AND id < :prevId)))\nORDER BY due_date DESC, id DESC\nLIMIT :pageSize!"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT
- *   id,
- *   title,
- *   description,
- *   status,
- *   to_char(due_date, 'YYYY-MM-DD"T"HH24:MIZ') AS "due_date!",
- *   to_char(created_at, 'YYYY-MM-DD"T"HH24:MIZ') AS "created_at!"
+ * SELECT *
  * FROM tasks
  * WHERE (CAST(:prevDuedate AS timestamptz) IS NULL OR (due_date < :prevDuedate OR (due_date = :prevDuedate AND id < :prevId)))
  * ORDER BY due_date DESC, id DESC
@@ -186,9 +160,9 @@ export interface IGetTasksByDuedateAscParams {
 
 /** 'GetTasksByDuedateAsc' return type */
 export interface IGetTasksByDuedateAscResult {
-  created_at: string;
+  created_at: Date;
   description: string | null;
-  due_date: string;
+  due_date: Date;
   id: number;
   status: status;
   title: string;
@@ -200,18 +174,12 @@ export interface IGetTasksByDuedateAscQuery {
   result: IGetTasksByDuedateAscResult;
 }
 
-const getTasksByDuedateAscIR: any = {"usedParamSet":{"prevDuedate":true,"prevId":true,"pageSize":true},"params":[{"name":"prevDuedate","required":false,"transform":{"type":"scalar"},"locs":[{"a":195,"b":206},{"a":247,"b":258},{"a":275,"b":286}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":297,"b":303}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":345,"b":354}]}],"statement":"SELECT\n  id,\n  title,\n  description,\n  status,\n  to_char(due_date, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"due_date!\",\n  to_char(created_at, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"created_at!\"\nFROM tasks\nWHERE (CAST(:prevDuedate AS timestamptz) IS NULL OR (due_date < :prevDuedate OR (due_date = :prevDuedate AND id < :prevId)))\nORDER BY due_date ASC, id ASC \nLIMIT :pageSize!"};
+const getTasksByDuedateAscIR: any = {"usedParamSet":{"prevDuedate":true,"prevId":true,"pageSize":true},"params":[{"name":"prevDuedate","required":false,"transform":{"type":"scalar"},"locs":[{"a":32,"b":43},{"a":84,"b":95},{"a":112,"b":123}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":134,"b":140}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":182,"b":191}]}],"statement":"SELECT *\nFROM tasks\nWHERE (CAST(:prevDuedate AS timestamptz) IS NULL OR (due_date < :prevDuedate OR (due_date = :prevDuedate AND id < :prevId)))\nORDER BY due_date ASC, id ASC \nLIMIT :pageSize!"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT
- *   id,
- *   title,
- *   description,
- *   status,
- *   to_char(due_date, 'YYYY-MM-DD"T"HH24:MIZ') AS "due_date!",
- *   to_char(created_at, 'YYYY-MM-DD"T"HH24:MIZ') AS "created_at!"
+ * SELECT *
  * FROM tasks
  * WHERE (CAST(:prevDuedate AS timestamptz) IS NULL OR (due_date < :prevDuedate OR (due_date = :prevDuedate AND id < :prevId)))
  * ORDER BY due_date ASC, id ASC 
@@ -230,9 +198,9 @@ export interface IGetTasksByStatusDescParams {
 
 /** 'GetTasksByStatusDesc' return type */
 export interface IGetTasksByStatusDescResult {
-  created_at: string;
+  created_at: Date;
   description: string | null;
-  due_date: string;
+  due_date: Date;
   id: number;
   status: status;
   title: string;
@@ -244,18 +212,12 @@ export interface IGetTasksByStatusDescQuery {
   result: IGetTasksByStatusDescResult;
 }
 
-const getTasksByStatusDescIR: any = {"usedParamSet":{"prevStatus":true,"prevId":true,"pageSize":true},"params":[{"name":"prevStatus","required":false,"transform":{"type":"scalar"},"locs":[{"a":195,"b":205},{"a":239,"b":249},{"a":264,"b":274}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":285,"b":291}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":332,"b":341}]}],"statement":"SELECT\n  id,\n  title,\n  description,\n  status,\n  to_char(due_date, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"due_date!\",\n  to_char(created_at, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"created_at!\"\nFROM tasks\nWHERE (CAST(:prevStatus AS status) IS NULL OR (status < :prevStatus OR (status = :prevStatus AND id < :prevId)))\nORDER BY status DESC, id DESC\nLIMIT :pageSize!"};
+const getTasksByStatusDescIR: any = {"usedParamSet":{"prevStatus":true,"prevId":true,"pageSize":true},"params":[{"name":"prevStatus","required":false,"transform":{"type":"scalar"},"locs":[{"a":32,"b":42},{"a":76,"b":86},{"a":101,"b":111}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":122,"b":128}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":169,"b":178}]}],"statement":"SELECT *\nFROM tasks\nWHERE (CAST(:prevStatus AS status) IS NULL OR (status < :prevStatus OR (status = :prevStatus AND id < :prevId)))\nORDER BY status DESC, id DESC\nLIMIT :pageSize!"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT
- *   id,
- *   title,
- *   description,
- *   status,
- *   to_char(due_date, 'YYYY-MM-DD"T"HH24:MIZ') AS "due_date!",
- *   to_char(created_at, 'YYYY-MM-DD"T"HH24:MIZ') AS "created_at!"
+ * SELECT *
  * FROM tasks
  * WHERE (CAST(:prevStatus AS status) IS NULL OR (status < :prevStatus OR (status = :prevStatus AND id < :prevId)))
  * ORDER BY status DESC, id DESC
@@ -274,9 +236,9 @@ export interface IGetTasksByStatusAscParams {
 
 /** 'GetTasksByStatusAsc' return type */
 export interface IGetTasksByStatusAscResult {
-  created_at: string;
+  created_at: Date;
   description: string | null;
-  due_date: string;
+  due_date: Date;
   id: number;
   status: status;
   title: string;
@@ -288,18 +250,12 @@ export interface IGetTasksByStatusAscQuery {
   result: IGetTasksByStatusAscResult;
 }
 
-const getTasksByStatusAscIR: any = {"usedParamSet":{"prevStatus":true,"prevId":true,"pageSize":true},"params":[{"name":"prevStatus","required":false,"transform":{"type":"scalar"},"locs":[{"a":195,"b":205},{"a":239,"b":249},{"a":264,"b":274}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":285,"b":291}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":331,"b":340}]}],"statement":"SELECT\n  id,\n  title,\n  description,\n  status,\n  to_char(due_date, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"due_date!\",\n  to_char(created_at, 'YYYY-MM-DD\"T\"HH24:MIZ') AS \"created_at!\"\nFROM tasks\nWHERE (CAST(:prevStatus AS status) IS NULL OR (status > :prevStatus OR (status = :prevStatus AND id > :prevId)))\nORDER BY status ASC, id ASC \nLIMIT :pageSize!"};
+const getTasksByStatusAscIR: any = {"usedParamSet":{"prevStatus":true,"prevId":true,"pageSize":true},"params":[{"name":"prevStatus","required":false,"transform":{"type":"scalar"},"locs":[{"a":32,"b":42},{"a":76,"b":86},{"a":101,"b":111}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":122,"b":128}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":168,"b":177}]}],"statement":"SELECT *\nFROM tasks\nWHERE (CAST(:prevStatus AS status) IS NULL OR (status > :prevStatus OR (status = :prevStatus AND id > :prevId)))\nORDER BY status ASC, id ASC \nLIMIT :pageSize!"};
 
 /**
  * Query generated from SQL:
  * ```
- * SELECT
- *   id,
- *   title,
- *   description,
- *   status,
- *   to_char(due_date, 'YYYY-MM-DD"T"HH24:MIZ') AS "due_date!",
- *   to_char(created_at, 'YYYY-MM-DD"T"HH24:MIZ') AS "created_at!"
+ * SELECT *
  * FROM tasks
  * WHERE (CAST(:prevStatus AS status) IS NULL OR (status > :prevStatus OR (status = :prevStatus AND id > :prevId)))
  * ORDER BY status ASC, id ASC 

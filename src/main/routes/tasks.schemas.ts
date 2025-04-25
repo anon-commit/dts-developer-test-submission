@@ -3,15 +3,15 @@ import { z } from "zod";
 const StatusEnum = z.enum(["TODO", "IN_PROGRESS", "DONE"]);
 
 const IdSchema = z.coerce
-  .number({ message: "Task ID is required and must be a number" })
-  .int({ message: "Task ID must be an integer" })
+  .number({ message: "ID is required and must be a number" })
+  .int({ message: "ID must be an integer" })
   .min(1, { message: "ID must be > 0" });
 
 const DateSchema = z
-  .string({ message: "Due date is required" })
+  .string({ message: "A date and time is required" })
   .datetime({
     message:
-      "Invalid due_date format. Datetimes must be supplied in ISO 8601 format with the UTC time zone designator.",
+      "Invalid datetime format. Datetimes must be supplied in ISO 8601 format with the UTC time zone designator.",
   })
   .transform((str) => new Date(str));
 
@@ -39,13 +39,7 @@ export const UpdateStatusSchema = z.object({
 
 export const ByCreatedCursorSchema = z.object({
   prevId: IdSchema,
-  prevCreatedAt: z
-    .string({ message: "Previous created at time is required" })
-    .datetime({
-      message:
-        "Invalid prevCreatedAt format. Datetimes must be supplied in ISO 8601 format with the UTC time zone designator.",
-    })
-    .transform((str) => new Date(str)),
+  prevCreatedAt: DateSchema,
 });
 
 export const ByStatusCursorSchema = z.object({
