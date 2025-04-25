@@ -1,6 +1,6 @@
 import type { Context } from "hono";
 import type { IGetTasksByStatusDescParams as IPageParams } from "../queries/taskQueries.queries.js";
-import Task from "../models/task.js";
+import Task from "../models/Task.js";
 import { Hono } from "hono";
 import { successResponse } from "../util/responseWrappers.js";
 import {
