@@ -5,7 +5,7 @@
     "dev": "tsx watch src/main/index.ts",
     "test": "vitest",
     "test:unit": "vitest unit --run",
-    "test:integration": "vitest integration --run",
+    "test:integration": "vitest integration run",
     "init-db": "createdb -U postgres task_manager && psql -U postgres -d task_manager -f init_db.sql",
     "seed-db": "psql -U postgres -d task_manager -f seed_db.sql",
     "init-test-db": "createdb -U postgres task_manager_test && psql -U postgres -d task_manager_test -f init_test_db.sql",

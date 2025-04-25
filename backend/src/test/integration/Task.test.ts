@@ -4,8 +4,6 @@ import {
   it,
   beforeAll,
   afterAll,
-  beforeEach,
-  afterEach,
 } from "vitest";
 import { pool } from "../../main/db";
 import Task from "../../main/models/Task";
@@ -14,7 +12,7 @@ import type {
   status,
   IInsertTaskParams,
 } from "../../main/queries/taskQueries.queries";
-import { insertTask } from "../../main/queries/taskQueries.queries.js"; // Keep for save/update/delete tests
+import { insertTask } from "../../main/queries/taskQueries.queries.js";
 
 const TASK_COUNT = 20;
 const KNOWN_TASK_ID = 5;
