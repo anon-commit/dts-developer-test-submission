@@ -46,7 +46,7 @@ tasks.get("/count", async (c: Context) => {
  * GET /tasks/page
  * Retrieves tasks with pagination using cursor-based pagination.
  * Query parameters:
- * - sortBy: 'created' or 'status'
+ * - sortBy: 'created', 'status' or 'dueDate'
  * - sortOrder: 'ASC' or 'DESC'
  * - pageSize: number
  * - cursor: base64 encoded cursor for pagination (not required for first page)
@@ -73,11 +73,11 @@ tasks.get("/page", async (c: Context) => {
   let nextCursor: string | null = null;
   if (nextPageExists) {
     const lastTask = page[page.length - 1];
-    const cursorObj = sortStrat.getNextCursor(lastTask);
-    nextCursor = pagination.encodeCursor(cursorObj);
+    const cursor = sortStrat.getNextCursor(lastTask);
+    nextCursor = pagination.encodeCursor(cursor);
   }
 
-  return c.json(successResponse({ tasks: page, nextCursor }), 200);
+  return c.json(successResponse({ tasks: page }, { cursor: nextCursor }), 200);
 });
 
 /**

@@ -10,18 +10,19 @@ import {
   getTasksByCreatedAsc,
   getTasksByStatusAsc,
   getNumTasks,
+  getTasksByDueDateDesc,
+  getTasksByDueDateAsc,
 } from "../queries/taskQueries.queries.js";
 import type {
-  IFindByIdResult,
-  IGetAllTasksResult,
+  IFindByIdResult as ITask,
   IUpdateStatusResult,
-  IInsertTaskResult,
   IGetTasksByCreatedDescParams,
   IGetTasksByStatusDescParams,
   IFindByIdParams,
   IUpdateStatusParams,
   IDeleteTaskParams,
   IInsertTaskParams,
+  IGetTasksByDueDateDescParams,
 } from "../queries/taskQueries.queries.js";
 import type { SortOrder } from "../util/types.js";
 import { TaskNotFoundError } from "../util/errors.js";
@@ -40,7 +41,7 @@ class Task {
   /**
    * Returns all tasks from the database, ordered by creation date in descending order.
    */
-  static async getAll(): Promise<IGetAllTasksResult[]> {
+  static async getAll(): Promise<ITask[]> {
     const allTasks = await getAllTasks.run(undefined, pool);
 
     if (allTasks.length === 0) {
@@ -65,8 +66,8 @@ class Task {
   static async getTasksByCreated(
     sortOrder: SortOrder,
     pageParams: IGetTasksByCreatedDescParams,
-  ): Promise<IGetAllTasksResult[]> {
-    let page: IGetAllTasksResult[];
+  ): Promise<ITask[]> {
+    let page: ITask[];
 
     if (sortOrder == "DESC") {
       page = await getTasksByCreatedDesc.run(pageParams, pool);
@@ -83,13 +84,36 @@ class Task {
 
   /**
    * Returns the next page of size `pageSize` from the database,
+   * ordered by due date in ascending or descending order, based on `sortOrder`.
+   */
+  static async getTasksByDueDate(
+    sortOrder: SortOrder,
+    pageParams: IGetTasksByDueDateDescParams,
+  ): Promise<ITask[]> {
+    let page: ITask[];
+
+    if (sortOrder == "DESC") {
+      page = await getTasksByDueDateDesc.run(pageParams, pool);
+    } else {
+      page = await getTasksByDueDateAsc.run(pageParams, pool);
+    }
+
+    if (page.length === 0) {
+      throw new TaskNotFoundError();
+    }
+
+    return page;
+  }
+
+  /**
+   * Returns the next page of size `pageSize` from the database,
    * ordered by status in ascending or descending order, based on `sortOrder`.
    */
   static async getTasksByStatus(
     sortOrder: SortOrder,
     pageParams: IGetTasksByStatusDescParams,
-  ): Promise<IGetAllTasksResult[]> {
-    let page: IGetAllTasksResult[];
+  ): Promise<ITask[]> {
+    let page: ITask[];
 
     if (sortOrder == "DESC") {
       page = await getTasksByStatusDesc.run(pageParams, pool);
@@ -107,7 +131,7 @@ class Task {
   /**
    * Returns the task with id `id` from the database.
    */
-  static async findById(id: IFindByIdParams): Promise<IFindByIdResult> {
+  static async findById(id: IFindByIdParams): Promise<ITask> {
     const task = await findById.run(id, pool);
 
     if (task.length === 0) {
@@ -149,7 +173,7 @@ class Task {
   /**
    * Inserts the task into the database and returns the inserted task.
    */
-  static async save(params: IInsertTaskParams): Promise<IInsertTaskResult> {
+  static async save(params: IInsertTaskParams): Promise<ITask> {
     const result = await insertTask.run(params, pool);
 
     return result[0];

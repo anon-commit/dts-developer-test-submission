@@ -47,8 +47,13 @@ export const ByStatusCursorSchema = z.object({
   prevStatus: StatusEnum,
 });
 
+export const ByDueDateCursorSchema = z.object({
+  prevId: IdSchema,
+  prevDueDate: DateSchema,
+});
+
 export const PaginationQuerySchema = z.object({
-  sortBy: z.enum(["created", "status"]).default("created"),
+  sortBy: z.enum(["created", "status", "dueDate"]).default("created"),
   sortOrder: z.enum(["ASC", "DESC"]).default("DESC"),
   pageSize: z.coerce
     .number({ message: "Page size is required must be a number" })

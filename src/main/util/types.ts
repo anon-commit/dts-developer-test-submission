@@ -1,10 +1,12 @@
 import { z } from "zod";
 import {
-  SortOrderSchema,
   ByStatusCursorSchema,
   ByCreatedCursorSchema,
+  ByDueDateCursorSchema,
 } from "../routes/tasks.schemas";
 
-export type SortOrder = z.infer<typeof SortOrderSchema>;
 export type ByCreatedCursor = z.infer<typeof ByCreatedCursorSchema>;
 export type ByStatusCursor = z.infer<typeof ByStatusCursorSchema>;
+export type ByDueDateCursor = z.infer<typeof ByDueDateCursorSchema>;
+
+export type Cursors = ByCreatedCursor | ByStatusCursor | ByDueDateCursor;

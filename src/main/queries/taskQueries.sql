@@ -18,17 +18,17 @@ WHERE (CAST(:prevCreatedAt as timestamptz) IS NULL OR (created_at > :prevCreated
 ORDER BY created_at ASC, id ASC
 LIMIT :pageSize!;
 
-/* @name getTasksByDuedateDesc */
+/* @name getTasksByDueDateDesc */
 SELECT *
 FROM tasks
-WHERE (CAST(:prevDuedate AS timestamptz) IS NULL OR (due_date < :prevDuedate OR (due_date = :prevDuedate AND id < :prevId)))
+WHERE (CAST(:prevDueDate AS timestamptz) IS NULL OR (due_date < :prevDueDate OR (due_date = :prevDueDate AND id < :prevId)))
 ORDER BY due_date DESC, id DESC
 LIMIT :pageSize!;
 
-/* @name getTasksByDuedateAsc */
+/* @name getTasksByDueDateAsc */
 SELECT *
 FROM tasks
-WHERE (CAST(:prevDuedate AS timestamptz) IS NULL OR (due_date < :prevDuedate OR (due_date = :prevDuedate AND id < :prevId)))
+WHERE (CAST(:prevDueDate AS timestamptz) IS NULL OR (due_date > :prevDueDate OR (due_date = :prevDueDate AND id > :prevId)))
 ORDER BY due_date ASC, id ASC 
 LIMIT :pageSize!;
 

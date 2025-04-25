@@ -138,15 +138,15 @@ const getTasksByCreatedAscIR: any = {"usedParamSet":{"prevCreatedAt":true,"prevI
 export const getTasksByCreatedAsc = new PreparedQuery<IGetTasksByCreatedAscParams,IGetTasksByCreatedAscResult>(getTasksByCreatedAscIR);
 
 
-/** 'GetTasksByDuedateDesc' parameters type */
-export interface IGetTasksByDuedateDescParams {
+/** 'GetTasksByDueDateDesc' parameters type */
+export interface IGetTasksByDueDateDescParams {
   pageSize: NumberOrString;
-  prevDuedate?: DateOrString | null | void;
+  prevDueDate?: DateOrString | null | void;
   prevId?: number | null | void;
 }
 
-/** 'GetTasksByDuedateDesc' return type */
-export interface IGetTasksByDuedateDescResult {
+/** 'GetTasksByDueDateDesc' return type */
+export interface IGetTasksByDueDateDescResult {
   created_at: Date;
   description: string | null;
   due_date: Date;
@@ -155,36 +155,36 @@ export interface IGetTasksByDuedateDescResult {
   title: string;
 }
 
-/** 'GetTasksByDuedateDesc' query type */
-export interface IGetTasksByDuedateDescQuery {
-  params: IGetTasksByDuedateDescParams;
-  result: IGetTasksByDuedateDescResult;
+/** 'GetTasksByDueDateDesc' query type */
+export interface IGetTasksByDueDateDescQuery {
+  params: IGetTasksByDueDateDescParams;
+  result: IGetTasksByDueDateDescResult;
 }
 
-const getTasksByDuedateDescIR: any = {"usedParamSet":{"prevDuedate":true,"prevId":true,"pageSize":true},"params":[{"name":"prevDuedate","required":false,"transform":{"type":"scalar"},"locs":[{"a":32,"b":43},{"a":84,"b":95},{"a":112,"b":123}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":134,"b":140}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":183,"b":192}]}],"statement":"SELECT *\nFROM tasks\nWHERE (CAST(:prevDuedate AS timestamptz) IS NULL OR (due_date < :prevDuedate OR (due_date = :prevDuedate AND id < :prevId)))\nORDER BY due_date DESC, id DESC\nLIMIT :pageSize!"};
+const getTasksByDueDateDescIR: any = {"usedParamSet":{"prevDueDate":true,"prevId":true,"pageSize":true},"params":[{"name":"prevDueDate","required":false,"transform":{"type":"scalar"},"locs":[{"a":32,"b":43},{"a":84,"b":95},{"a":112,"b":123}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":134,"b":140}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":183,"b":192}]}],"statement":"SELECT *\nFROM tasks\nWHERE (CAST(:prevDueDate AS timestamptz) IS NULL OR (due_date < :prevDueDate OR (due_date = :prevDueDate AND id < :prevId)))\nORDER BY due_date DESC, id DESC\nLIMIT :pageSize!"};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT *
  * FROM tasks
- * WHERE (CAST(:prevDuedate AS timestamptz) IS NULL OR (due_date < :prevDuedate OR (due_date = :prevDuedate AND id < :prevId)))
+ * WHERE (CAST(:prevDueDate AS timestamptz) IS NULL OR (due_date < :prevDueDate OR (due_date = :prevDueDate AND id < :prevId)))
  * ORDER BY due_date DESC, id DESC
  * LIMIT :pageSize!
  * ```
  */
-export const getTasksByDuedateDesc = new PreparedQuery<IGetTasksByDuedateDescParams,IGetTasksByDuedateDescResult>(getTasksByDuedateDescIR);
+export const getTasksByDueDateDesc = new PreparedQuery<IGetTasksByDueDateDescParams,IGetTasksByDueDateDescResult>(getTasksByDueDateDescIR);
 
 
-/** 'GetTasksByDuedateAsc' parameters type */
-export interface IGetTasksByDuedateAscParams {
+/** 'GetTasksByDueDateAsc' parameters type */
+export interface IGetTasksByDueDateAscParams {
   pageSize: NumberOrString;
-  prevDuedate?: DateOrString | null | void;
+  prevDueDate?: DateOrString | null | void;
   prevId?: number | null | void;
 }
 
-/** 'GetTasksByDuedateAsc' return type */
-export interface IGetTasksByDuedateAscResult {
+/** 'GetTasksByDueDateAsc' return type */
+export interface IGetTasksByDueDateAscResult {
   created_at: Date;
   description: string | null;
   due_date: Date;
@@ -193,25 +193,25 @@ export interface IGetTasksByDuedateAscResult {
   title: string;
 }
 
-/** 'GetTasksByDuedateAsc' query type */
-export interface IGetTasksByDuedateAscQuery {
-  params: IGetTasksByDuedateAscParams;
-  result: IGetTasksByDuedateAscResult;
+/** 'GetTasksByDueDateAsc' query type */
+export interface IGetTasksByDueDateAscQuery {
+  params: IGetTasksByDueDateAscParams;
+  result: IGetTasksByDueDateAscResult;
 }
 
-const getTasksByDuedateAscIR: any = {"usedParamSet":{"prevDuedate":true,"prevId":true,"pageSize":true},"params":[{"name":"prevDuedate","required":false,"transform":{"type":"scalar"},"locs":[{"a":32,"b":43},{"a":84,"b":95},{"a":112,"b":123}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":134,"b":140}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":182,"b":191}]}],"statement":"SELECT *\nFROM tasks\nWHERE (CAST(:prevDuedate AS timestamptz) IS NULL OR (due_date < :prevDuedate OR (due_date = :prevDuedate AND id < :prevId)))\nORDER BY due_date ASC, id ASC \nLIMIT :pageSize!"};
+const getTasksByDueDateAscIR: any = {"usedParamSet":{"prevDueDate":true,"prevId":true,"pageSize":true},"params":[{"name":"prevDueDate","required":false,"transform":{"type":"scalar"},"locs":[{"a":32,"b":43},{"a":84,"b":95},{"a":112,"b":123}]},{"name":"prevId","required":false,"transform":{"type":"scalar"},"locs":[{"a":134,"b":140}]},{"name":"pageSize","required":true,"transform":{"type":"scalar"},"locs":[{"a":182,"b":191}]}],"statement":"SELECT *\nFROM tasks\nWHERE (CAST(:prevDueDate AS timestamptz) IS NULL OR (due_date > :prevDueDate OR (due_date = :prevDueDate AND id > :prevId)))\nORDER BY due_date ASC, id ASC \nLIMIT :pageSize!"};
 
 /**
  * Query generated from SQL:
  * ```
  * SELECT *
  * FROM tasks
- * WHERE (CAST(:prevDuedate AS timestamptz) IS NULL OR (due_date < :prevDuedate OR (due_date = :prevDuedate AND id < :prevId)))
+ * WHERE (CAST(:prevDueDate AS timestamptz) IS NULL OR (due_date > :prevDueDate OR (due_date = :prevDueDate AND id > :prevId)))
  * ORDER BY due_date ASC, id ASC 
  * LIMIT :pageSize!
  * ```
  */
-export const getTasksByDuedateAsc = new PreparedQuery<IGetTasksByDuedateAscParams,IGetTasksByDuedateAscResult>(getTasksByDuedateAscIR);
+export const getTasksByDueDateAsc = new PreparedQuery<IGetTasksByDueDateAscParams,IGetTasksByDueDateAscResult>(getTasksByDueDateAscIR);
 
 
 /** 'GetTasksByStatusDesc' parameters type */
