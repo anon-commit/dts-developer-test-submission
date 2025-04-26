@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import type { IGetTasksByStatusDescParams as IPageParams } from "../queries/taskQueries.queries.js";
+import type { IGetTasksByCreatedAscParams as IPageParams } from "../queries/taskQueries.queries.js";
 import Task from "../models/Task.js";
 import { Hono } from "hono";
 import { successResponse } from "../util/responseWrappers.js";
@@ -53,18 +53,18 @@ tasks.get("/count", async (c: Context) => {
  */
 tasks.get("/page", async (c: Context) => {
   const queryValidation = PaginationQuerySchema.parse(c.req.query());
-  let { sortBy, sortOrder, pageSize, cursor } = queryValidation;
+  let { status, sortBy, sortOrder, pageSize, cursor } = queryValidation;
 
   const sortStrat = pagination.strategies[sortBy];
 
   let params: IPageParams;
 
   if (!cursor) {
-    params = { pageSize };
+    params = { status, pageSize };
   } else {
     const decodedCursor = pagination.decodeCursor(cursor);
     const validatedCursor = sortStrat.cursorSchema.parse(decodedCursor);
-    params = { ...validatedCursor, pageSize };
+    params = { ...validatedCursor, status, pageSize };
   }
 
   const page = await sortStrat.getTasks(sortOrder, params);
@@ -74,6 +74,7 @@ tasks.get("/page", async (c: Context) => {
   if (nextPageExists) {
     const lastTask = page[page.length - 1];
     const cursor = sortStrat.getNextCursor(lastTask);
+    console.log(cursor);
     nextCursor = pagination.encodeCursor(cursor);
   }
 

@@ -42,19 +42,15 @@ export const ByCreatedCursorSchema = z.object({
   prevCreatedAt: DateSchema,
 });
 
-export const ByStatusCursorSchema = z.object({
-  prevId: IdSchema,
-  prevStatus: StatusEnum,
-});
-
 export const ByDueDateCursorSchema = z.object({
   prevId: IdSchema,
   prevDueDate: DateSchema,
 });
 
-export const SortOrderSchema = z.enum(["ASC", "DESC"]).default("DESC")
+export const SortOrderSchema = z.enum(["ASC", "DESC"]).default("DESC");
 
 export const PaginationQuerySchema = z.object({
+  status: StatusEnum,
   sortBy: z.enum(["created", "status", "dueDate"]).default("created"),
   sortOrder: SortOrderSchema,
   pageSize: z.coerce

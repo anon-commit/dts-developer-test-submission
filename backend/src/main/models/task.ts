@@ -6,9 +6,7 @@ import {
   deleteTask,
   insertTask,
   getTasksByCreatedDesc,
-  getTasksByStatusDesc,
   getTasksByCreatedAsc,
-  getTasksByStatusAsc,
   getNumTasks,
   getTasksByDueDateDesc,
   getTasksByDueDateAsc,
@@ -17,7 +15,6 @@ import type {
   IFindByIdResult as ITask,
   IUpdateStatusResult,
   IGetTasksByCreatedDescParams,
-  IGetTasksByStatusDescParams,
   IFindByIdParams,
   IUpdateStatusParams,
   IDeleteTaskParams,
@@ -96,29 +93,6 @@ class Task {
       page = await getTasksByDueDateDesc.run(pageParams, pool);
     } else {
       page = await getTasksByDueDateAsc.run(pageParams, pool);
-    }
-
-    if (page.length === 0) {
-      throw new TaskNotFoundError();
-    }
-
-    return page;
-  }
-
-  /**
-   * Returns the next page of size `pageSize` from the database,
-   * ordered by status in ascending or descending order, based on `sortOrder`.
-   */
-  static async getTasksByStatus(
-    sortOrder: SortOrder,
-    pageParams: IGetTasksByStatusDescParams,
-  ): Promise<ITask[]> {
-    let page: ITask[];
-
-    if (sortOrder == "DESC") {
-      page = await getTasksByStatusDesc.run(pageParams, pool);
-    } else {
-      page = await getTasksByStatusAsc.run(pageParams, pool);
     }
 
     if (page.length === 0) {

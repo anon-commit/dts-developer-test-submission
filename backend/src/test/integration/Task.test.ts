@@ -1,10 +1,4 @@
-import {
-  describe,
-  expect,
-  it,
-  beforeAll,
-  afterAll,
-} from "vitest";
+import { describe, expect, it, beforeAll, afterAll } from "vitest";
 import { pool } from "../../main/db";
 import Task from "../../main/models/Task";
 import { TaskNotFoundError } from "../../main/util/errors";
@@ -151,68 +145,6 @@ describe("Task model", () => {
         lastTask.due_date.getTime(),
       );
       if (secondPage[0].due_date.getTime() === lastTask.due_date.getTime()) {
-        expect(secondPage[0].id).toBeGreaterThan(lastTask.id);
-      }
-    });
-  });
-
-  describe("getTasksByStatus", () => {
-    const pageSize = 10;
-    const statusOrderValue = { TODO: 1, IN_PROGRESS: 2, DONE: 3 };
-
-    it("Should return tasks ordered by status (descending)", async () => {
-      const pageParams = { pageSize };
-      const result = await Task.getTasksByStatus("DESC", pageParams);
-
-      expect(result).toHaveLength(pageSize);
-      expect(statusOrderValue[result[0].status]).toBeGreaterThanOrEqual(
-        statusOrderValue[result[1].status],
-      );
-      if (
-        statusOrderValue[result[0].status] ===
-        statusOrderValue[result[1].status]
-      ) {
-        expect(result[0].id).toBeGreaterThan(result[1].id);
-      }
-    });
-
-    it("Should return tasks ordered by status (ascending)", async () => {
-      const pageParams = { pageSize };
-      const result = await Task.getTasksByStatus("ASC", pageParams);
-
-      expect(result).toHaveLength(pageSize);
-      expect(statusOrderValue[result[0].status]).toBeLessThanOrEqual(
-        statusOrderValue[result[1].status],
-      );
-      if (
-        statusOrderValue[result[0].status] ===
-        statusOrderValue[result[1].status]
-      ) {
-        expect(result[0].id).toBeLessThan(result[1].id);
-      }
-    });
-
-    it("Should handle pagination correctly (ascending)", async () => {
-      const firstPage = await Task.getTasksByStatus("ASC", { pageSize });
-      expect(firstPage).toHaveLength(pageSize);
-
-      // Get second page using cursor
-      const lastTask = firstPage[pageSize - 1];
-      const secondPageParams = {
-        pageSize,
-        prevStatus: lastTask.status,
-        prevId: lastTask.id,
-      };
-      const secondPage = await Task.getTasksByStatus("ASC", secondPageParams);
-
-      expect(secondPage).toHaveLength(pageSize);
-      expect(statusOrderValue[secondPage[0].status]).toBeGreaterThanOrEqual(
-        statusOrderValue[lastTask.status],
-      );
-      if (
-        statusOrderValue[secondPage[0].status] ===
-        statusOrderValue[lastTask.status]
-      ) {
         expect(secondPage[0].id).toBeGreaterThan(lastTask.id);
       }
     });
