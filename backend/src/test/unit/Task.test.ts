@@ -8,9 +8,7 @@ import {
   updateStatus,
   deleteTask,
   getTasksByCreatedDesc,
-  getTasksByStatusDesc,
   getTasksByCreatedAsc,
-  getTasksByStatusAsc,
   getTasksByDueDateDesc,
   getTasksByDueDateAsc,
 } from "../../main/queries/taskQueries.queries.js";
@@ -30,8 +28,6 @@ vi.mocked(getTasksByCreatedDesc).run = mockRun;
 vi.mocked(getTasksByCreatedAsc).run = mockRun;
 vi.mocked(getTasksByDueDateDesc).run = mockRun;
 vi.mocked(getTasksByDueDateAsc).run = mockRun;
-vi.mocked(getTasksByStatusDesc).run = mockRun;
-vi.mocked(getTasksByStatusAsc).run = mockRun;
 vi.mocked(findById).run = mockRun;
 vi.mocked(updateStatus).run = mockRun;
 vi.mocked(deleteTask).run = mockRun;
@@ -50,7 +46,7 @@ describe("Task model", () => {
   });
 
   describe("getTasksByCreated", () => {
-    const pageParams = { pageSize: 10 };
+    const pageParams = { status: "TODO" as status, pageSize: 10 };
 
     it("Should throw TaskNotFoundError() if there are no tasks (ascending)", async () => {
       mockRun.mockResolvedValue([]);
@@ -70,7 +66,8 @@ describe("Task model", () => {
   });
 
   describe("getTasksByDueDate", () => {
-    const pageParams = { pageSize: 10 };
+    const pageParams = { status: "TODO" as status, pageSize: 10 };
+
     it("Should throw TaskNotFoundError() if there are no tasks DESC", async () => {
       mockRun.mockResolvedValue([]);
 
@@ -83,25 +80,6 @@ describe("Task model", () => {
       mockRun.mockResolvedValue([]);
 
       await expect(Task.getTasksByDueDate("ASC", pageParams)).rejects.toThrow(
-        TaskNotFoundError,
-      );
-    });
-  });
-
-  describe("getTasksByStatus", () => {
-    const pageParams = { pageSize: 10 };
-    it("Should throw TaskNotFoundError() if there are no tasks DESC", async () => {
-      mockRun.mockResolvedValue([]);
-
-      await expect(Task.getTasksByStatus("DESC", pageParams)).rejects.toThrow(
-        TaskNotFoundError,
-      );
-    });
-
-    it("Should throw TaskNotFoundError() if there are no tasks (ascending)", async () => {
-      mockRun.mockResolvedValue([]);
-
-      await expect(Task.getTasksByStatus("ASC", pageParams)).rejects.toThrow(
         TaskNotFoundError,
       );
     });

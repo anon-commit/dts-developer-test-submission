@@ -8,7 +8,7 @@ import type {
 } from "../../main/queries/taskQueries.queries";
 import { insertTask } from "../../main/queries/taskQueries.queries.js";
 
-const TASK_COUNT = 20;
+const TASK_COUNT = 50;
 const KNOWN_TASK_ID = 5;
 const NON_EXISTENT_TASK_ID = 99999;
 const PAGE_SIZE = 5;
@@ -45,8 +45,9 @@ describe("Task model", () => {
   });
 
   describe("getTasksByCreated", () => {
+    const pageParams = { status: "TODO" as status, pageSize: PAGE_SIZE };
+
     it("Should return tasks ordered by created_at (descending)", async () => {
-      const pageParams = { pageSize: PAGE_SIZE };
       const result = await Task.getTasksByCreated("DESC", pageParams);
 
       expect(result).toHaveLength(PAGE_SIZE);
@@ -59,7 +60,6 @@ describe("Task model", () => {
     });
 
     it("Should return tasks ordered by created_at (ascending)", async () => {
-      const pageParams = { pageSize: PAGE_SIZE };
       const result = await Task.getTasksByCreated("ASC", pageParams);
 
       expect(result).toHaveLength(PAGE_SIZE);
@@ -72,14 +72,13 @@ describe("Task model", () => {
     });
 
     it("Should handle pagination correctly (descending)", async () => {
-      const firstPage = await Task.getTasksByCreated("DESC", {
-        pageSize: PAGE_SIZE,
-      });
+      const firstPage = await Task.getTasksByCreated("DESC", pageParams);
       expect(firstPage).toHaveLength(PAGE_SIZE);
 
       // Get second page using cursor
       const lastTask = firstPage[PAGE_SIZE - 1];
       const secondPageParams = {
+        status: "TODO" as status,
         pageSize: PAGE_SIZE,
         prevCreatedAt: lastTask.created_at.toISOString(),
         prevId: lastTask.id,
@@ -99,8 +98,9 @@ describe("Task model", () => {
   });
 
   describe("getTasksByDueDate", () => {
+    const pageParams = { status: "TODO" as status, pageSize: PAGE_SIZE };
+
     it("Should return tasks ordered by due_date (descending)", async () => {
-      const pageParams = { pageSize: PAGE_SIZE };
       const result = await Task.getTasksByDueDate("DESC", pageParams);
 
       expect(result).toHaveLength(PAGE_SIZE);
@@ -113,7 +113,6 @@ describe("Task model", () => {
     });
 
     it("Should return tasks ordered by due_date (ascending)", async () => {
-      const pageParams = { pageSize: PAGE_SIZE };
       const result = await Task.getTasksByDueDate("ASC", pageParams);
 
       expect(result).toHaveLength(PAGE_SIZE);
@@ -126,14 +125,13 @@ describe("Task model", () => {
     });
 
     it("Should handle pagination correctly (ascending)", async () => {
-      const firstPage = await Task.getTasksByDueDate("ASC", {
-        pageSize: PAGE_SIZE,
-      });
+      const firstPage = await Task.getTasksByDueDate("ASC", pageParams);
       expect(firstPage).toHaveLength(PAGE_SIZE);
 
       // Get second page using cursor
       const lastTask = firstPage[PAGE_SIZE - 1];
       const secondPageParams = {
+        status: "TODO" as status,
         pageSize: PAGE_SIZE,
         prevDueDate: lastTask.due_date.toISOString(),
         prevId: lastTask.id,
