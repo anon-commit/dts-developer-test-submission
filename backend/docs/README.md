@@ -46,6 +46,8 @@ Error responses will have a `message` property and in some cases an `errors` pro
 
 <a name="get-all"></a>
 
+---
+
 #### GET `/all` – Returns all tasks
 
 - **200 Response**
@@ -65,6 +67,8 @@ Error responses will have a `message` property and in some cases an `errors` pro
     ]
   }
   ```
+
+---
 
 <a name="get-page"></a>
 
@@ -101,6 +105,8 @@ Error responses will have a `message` property and in some cases an `errors` pro
   }
   ```
 
+---
+
 <a name="get-id"></a>
 
 #### GET `/tasks/:id` – Returns the task with id `:id`
@@ -121,6 +127,8 @@ Error responses will have a `message` property and in some cases an `errors` pro
   }
   ```
 
+---
+
 <a name="get-count"></a>
 
 #### GET `/count` – Returns the total number of tasks
@@ -135,6 +143,8 @@ Error responses will have a `message` property and in some cases an `errors` pro
     }
   }
   ```
+
+---
 
 <a name="save-task"></a>
 
@@ -169,6 +179,8 @@ Error responses will have a `message` property and in some cases an `errors` pro
   }
   ```
 
+---
+
 <a name="update-status"></a>
 
 #### PATCH `/status/:id` – Updates the status of an existing task
@@ -192,6 +204,8 @@ Error responses will have a `message` property and in some cases an `errors` pro
   }
   ```
 
+---
+
 <a name="delete-id"></a>
 
 #### DELETE `/tasks/:id` – Deletes the task with id `:id`
@@ -203,6 +217,8 @@ Error responses will have a `message` property and in some cases an `errors` pro
     "success": true
   }
   ```
+
+---
 
 ## Errors
 
