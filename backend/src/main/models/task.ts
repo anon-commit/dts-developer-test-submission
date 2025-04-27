@@ -58,6 +58,7 @@ class Task {
 
   /**
    * Returns the next page of size `pageSize` from the database,
+   * where the tasks have a status equal to `pageParams.status`,
    * ordered by creation date in ascending or descending order, based on `sortOrder`.
    */
   static async getTasksByCreated(
@@ -81,6 +82,7 @@ class Task {
 
   /**
    * Returns the next page of size `pageSize` from the database,
+   * where the tasks have a status equal to `pageParams.status`,
    * ordered by due date in ascending or descending order, based on `sortOrder`.
    */
   static async getTasksByDueDate(
