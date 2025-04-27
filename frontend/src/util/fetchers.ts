@@ -1,5 +1,14 @@
 import axios from "axios";
-import type { TaskResponse, Status, SortBy, SortOrder } from "../types";
+import type {
+  TaskResponse,
+  UpdateTaskResponse,
+  Status,
+  SortBy,
+  SortOrder,
+  IdParam,
+  NoContentResponse,
+  TaskCountResponse,
+} from "../types";
 import type { AxiosResponse } from "axios";
 
 const api = axios.create({
@@ -24,38 +33,53 @@ export async function createTask(params: {
     .then((res) => res.data);
 }
 
-export function getTaskById(id: number) {
-  return api.get(`/${id}`);
+export async function updateTaskStatus(params: {
+  id: number;
+  status: Status;
+}): Promise<UpdateTaskResponse> {
+  return api
+    .patch<UpdateTaskResponse, AxiosResponse<UpdateTaskResponse>>(
+      `/status/${params.id}`,
+      {
+        data: {
+          status: params.status,
+        },
+      },
+    )
+    .then((res) => res.data);
 }
 
-export function getNextPage(params: {
+export async function deleteTask({ id }: IdParam): Promise<NoContentResponse> {
+  return api
+    .delete<NoContentResponse, AxiosResponse<NoContentResponse>>(`/${id}`)
+    .then((res) => res.data);
+}
+export async function getNextPage(params: {
   status: Status;
   sortBy: SortBy;
   sortOrder: SortOrder;
   pageSize: number;
   cursor?: string;
-}) {
-  return api.get(`/page`, {
-    status: params.status,
-    sortBy: params.sortBy,
-    sortOrder: params.sortOrder,
-    pageSize: params.pageSize,
-    cursor: params.cursor,
-  });
-}
-
-export function getTaskCount() {
-  return api.get("/count");
-}
-
-export function updateTaskStatus(params: { id: number; status: Status }) {
-  return api.patch(`/status/${params.id}`, {
-    data: {
+}): Promise<TaskResponse> {
+  return api
+    .get<TaskResponse, AxiosResponse<TaskResponse>>(`/page`, {
       status: params.status,
-    },
-  });
+      sortBy: params.sortBy,
+      sortOrder: params.sortOrder,
+      pageSize: params.pageSize,
+      cursor: params.cursor,
+    })
+    .then((res) => res.data);
 }
 
-export function deleteTask(id: number) {
-  return api.delete(`/${id}`);
+export async function getTaskById({ id }: IdParam): Promise<TaskResponse> {
+  return api
+    .get<TaskResponse, AxiosResponse<TaskResponse>>(`/${id}`)
+    .then((res) => res.data);
+}
+
+export async function getTaskCount(): Promise<TaskCountResponse> {
+  return api
+    .get<TaskCountResponse, AxiosResponse<TaskCountResponse>>("/count")
+    .then((res) => res.data);
 }
