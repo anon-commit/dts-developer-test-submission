@@ -1,24 +1,27 @@
 import axios from "axios";
-import type { Status, SortBy, SortOrder } from "../types";
+import type { TaskResponse, Status, SortBy, SortOrder } from "../types";
+import type { AxiosResponse } from "axios";
 
 const api = axios.create({
   baseURL: "http://localhost:3000/api/tasks",
 });
 
-export function createTask(params: {
+export async function createTask(params: {
   title: string;
   dueDate: string;
   dueTime: string;
   description?: string;
-}) {
+}): Promise<TaskResponse> {
   const isoDateTime = new Date(
     `${params.dueDate}T${params.dueTime}`,
   ).toISOString();
-  return api.post("", {
-    title: params.title,
-    description: params.description,
-    due_date: isoDateTime,
-  });
+  return api
+    .post<TaskResponse, AxiosResponse<TaskResponse>>("", {
+      title: params.title,
+      description: params.description,
+      due_date: isoDateTime,
+    })
+    .then((res) => res.data);
 }
 
 export function getTaskById(id: number) {

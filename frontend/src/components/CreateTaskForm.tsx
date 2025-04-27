@@ -2,15 +2,8 @@ import { useState, useCallback } from "react";
 import * as GovUK from "govuk-react";
 import { useForm } from "react-hook-form";
 import { validateTitle, validateDueDate, validateDueTime } from "../validators";
-import { createTask } from "../util/fetchers";
-import { useQuery } from "@tanstack/react-query";
-
-export type Inputs = {
-  title: string;
-  description?: string;
-  dueDate: string;
-  dueTime: string;
-};
+import { useCreateTask } from "../util/hooks";
+import { CreateTaskParams } from "../types";
 
 // Round the time to the nearest next half hour
 function getRoundedTime() {
@@ -34,7 +27,7 @@ function CreateTaskForm() {
     handleSubmit,
     getValues,
     formState: { errors },
-  } = useForm<Inputs>({
+  } = useForm<CreateTaskParams>({
     reValidateMode: "onSubmit",
     defaultValues: {
       dueDate: nowDateIso,
@@ -42,16 +35,15 @@ function CreateTaskForm() {
     },
   });
 
-  const [submittedData, setSubmittedData] = useState<Inputs | null>(null);
+  const [submittedData, setSubmittedData] = useState<CreateTaskParams | null>(
+    null,
+  );
 
-  const { isPending, error, data, refetch } = useQuery({
-    queryKey: ["tasks", submittedData],
-    queryFn: () => createTask(submittedData!),
-  });
+  const { mutate, isPending, error, data } = useCreateTask();
 
-  const onSubmit = useCallback((params: Inputs) => {
+  const onSubmit = useCallback((params: CreateTaskParams) => {
     setSubmittedData(params);
-    refetch();
+    mutate(params!);
   }, []);
 
   if (!submittedData) {
@@ -92,7 +84,6 @@ function CreateTaskForm() {
 
               <GovUK.Input
                 type="date"
-                min={nowDateIso}
                 defaultValue={nowDateIso}
                 {...register("dueDate", {
                   validate: validateDueDate,

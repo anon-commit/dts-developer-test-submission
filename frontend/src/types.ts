@@ -16,3 +16,24 @@ export type Task = {
   due_date: Date;
   created_at: Date;
 };
+export interface TaskResponse {
+  success: boolean;
+  data: Task[];
+}
+
+type ErrorMessage = {
+  param: string;
+  message: string;
+};
+export interface ErrorPayload {
+  success: boolean;
+  message: string;
+  errors: ErrorMessage[];
+}
+
+export type CreateTaskParams = {
+  title: string;
+  description?: string;
+  dueDate: string;
+  dueTime: string;
+};
