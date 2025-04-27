@@ -16,9 +16,24 @@ export type Task = {
   due_date: Date;
   created_at: Date;
 };
+
 export interface TaskResponse {
   success: boolean;
-  data: Task[];
+  data: Task | Task[];
+}
+
+export interface UpdateTaskResponse {
+  success: boolean;
+  data: { newStatus: Status };
+}
+
+export interface NoContentResponse {
+  success: boolean;
+}
+
+export interface TaskCountResponse {
+  success: boolean;
+  data: { count: number };
 }
 
 type ErrorMessage = {
@@ -36,4 +51,17 @@ export type CreateTaskParams = {
   description?: string;
   dueDate: string;
   dueTime: string;
+};
+
+export type UpdateTaskStatusParams = {
+  id: number;
+  status: Status;
+};
+
+export type IdParam = {
+  id: number;
+};
+
+export type deleteTaskParams = {
+  id: number;
 };
