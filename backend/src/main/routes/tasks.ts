@@ -118,7 +118,7 @@ tasks.patch("/status/:id", async (c: Context) => {
 
   const result = await Task.updateStatus({ taskId: id, newStatus: status });
 
-  return c.json(successResponse({ new_status: result }), 200);
+  return c.json(successResponse({ new_status: result.status }), 200);
 });
 
 /**

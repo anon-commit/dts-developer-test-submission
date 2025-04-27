@@ -48,7 +48,7 @@ app.onError((err, c: Context) => {
     return c.json(errorResponse(err.message), 404);
   }
   if (err instanceof SyntaxError) {
-    return c.json(errorResponse("Received invalid JSON."), 404);
+    return c.json(errorResponse("Received invalid JSON."), 400);
   }
 
   console.error(err);
