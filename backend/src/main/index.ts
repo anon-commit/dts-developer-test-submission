@@ -7,11 +7,23 @@ import type { Context } from "hono";
 import { ZodError } from "zod";
 import { errorResponse } from "./util/responseWrappers";
 import { TaskNotFoundError } from "./util/errors.js";
+import { cors } from "hono/cors";
 
 const app = new Hono();
 
 app.use(logger());
 app.use("/favicon.ico", serveStatic({ path: "./favicon.ico" }));
+app.use(
+  "/api/*",
+  cors({
+    origin: "*",
+    allowMethods: ["GET", "POST", "PATCH", "DELETE"],
+    allowHeaders: ["Content-Type"],
+    exposeHeaders: ["Content-Length"],
+    maxAge: 600,
+    credentials: true,
+  }),
+);
 
 app.get("/", (c) => {
   return c.json({ message: "Welcome to the Task Management API." });
