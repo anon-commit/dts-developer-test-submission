@@ -17,7 +17,7 @@ app.get("/", (c) => {
   return c.json({ message: "Welcome to the Task Management API." });
 });
 
-app.route("/tasks", tasks);
+app.route("/api/tasks", tasks);
 
 app.onError((err, c: Context) => {
   if (err instanceof ZodError) {
