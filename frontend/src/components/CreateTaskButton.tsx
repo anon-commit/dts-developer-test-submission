@@ -17,7 +17,7 @@ const modalStyle = {
 
 ReactModal.setAppElement("#root");
 
-function AddTaskButton() {
+function CreateTaskButton() {
   const [modalIsOpen, setIsOpen] = React.useState(false);
 
   function openModal() {
@@ -30,7 +30,7 @@ function AddTaskButton() {
 
   return (
     <div>
-      <GovUK.Button onClick={openModal}>Add task</GovUK.Button>
+      <GovUK.Button onClick={openModal}>Create task</GovUK.Button>
       <ReactModal
         style={modalStyle}
         isOpen={modalIsOpen}
@@ -45,4 +45,4 @@ function AddTaskButton() {
   );
 }
 
-export default AddTaskButton;
+export default CreateTaskButton;
