@@ -1,15 +1,13 @@
-import * as React from 'react';
-import * as GovUK from 'govuk-react';
-import { Link } from 'react-router-dom';
+import * as GovUK from "govuk-react";
+import AddTaskButton from "./components/AddTaskButton";
 
-const Home: React.FC = () => (
-  <>
-    <GovUK.H2>Welcome to the govuk-react example application.</GovUK.H2>
-    <GovUK.Paragraph>Click Start to continue.</GovUK.Paragraph>
-    <GovUK.Button start as={Link}>
-      Start now
-    </GovUK.Button>
-  </>
-);
+function Home() {
+  return (
+    <>
+      <GovUK.H2>Task manager</GovUK.H2>
+      <AddTaskButton />
+    </>
+  );
+}
 
 export default Home;
