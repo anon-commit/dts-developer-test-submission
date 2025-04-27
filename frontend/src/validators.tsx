@@ -9,7 +9,7 @@ export function validateDueDate(date: string): true | string {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  return selected >= today ? true : "The date/time must be in the future";
+  return selected >= today ? true : "This date must be in the future";
 }
 
 export function validateDueTime(time: string, dueDate: Date): true | string {
