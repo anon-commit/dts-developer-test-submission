@@ -9,6 +9,7 @@
    - [Frontend](#frontend)
    - [Handling date/times](#datetimes)
 4. [API Documentation](#docs)
+5. [Future improvements](#plans)
 
 <a name="how-to"></a>
 
@@ -136,7 +137,7 @@ adhere to the UK government design system.
 
 ---
 
-<a name="datetime"></a>
+<a name="datetimes"></a>
 
 #### Handling date/times
 
@@ -150,3 +151,11 @@ adhere to the UK government design system.
 ## Documentation
 
 API Documentation can be found in [`backend/docs`](https://github.com/anon-commit/dts-developer-test-submission/tree/main/backend/docs).
+
+<a name="plans"></a>
+
+## Future improvements
+
+- Increase test coverage
+- Add more fallback ui elements to cover all error states
+- Implement authentication to support multiple users
