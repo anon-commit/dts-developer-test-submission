@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import * as GovUK from "govuk-react";
 import { useForm } from "react-hook-form";
 import { useUpdateTaskStatus } from "../util/hooks";
@@ -25,10 +25,10 @@ function SelectStatusForm({ id, status }: Props) {
 
   const { mutate, isPending, error, data } = useUpdateTaskStatus();
 
-  const onSubmit = useCallback((formValues: { status: Status }) => {
+  const onSubmit = (formValues: { status: Status }) => {
     setSubmittedData({ id, status: formValues.status });
     mutate({ id, status: formValues.status });
-  }, []);
+  };
 
   if (!submittedData) {
     return (

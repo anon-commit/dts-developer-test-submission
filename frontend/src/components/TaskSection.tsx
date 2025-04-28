@@ -4,6 +4,7 @@ import { useGetNextPage } from "../util/hooks";
 import { statusEnumToDisplay } from "../util/helpers";
 import ModalButton from "./ModalButton";
 import SelectStatusForm from "./SelectStatusForm";
+import DeleteTaskConfirmation from "./DeleteConfirmation";
 import "../style/globals.css";
 
 function TaskSection({ status }: { status: Status }) {
@@ -46,6 +47,7 @@ function TaskSection({ status }: { status: Status }) {
             Created at
           </div>
           <div className="tasks-cell" style={{ width: "12.5%" }}></div>
+          <div className="tasks-cell" style={{ width: "12.5%" }}></div>
         </div>
         {data.data.tasks.map((task) => {
           const dueDate = new Date(task.due_date);
@@ -74,6 +76,11 @@ function TaskSection({ status }: { status: Status }) {
               <div className="tasks-cell">
                 <ModalButton text="Move" colour="#1d70b8">
                   <SelectStatusForm id={task.id} status={status} />
+                </ModalButton>
+              </div>
+              <div className="tasks-cell">
+                <ModalButton text="Delete" colour="#d4351c">
+                  <DeleteTaskConfirmation id={task.id} />
                 </ModalButton>
               </div>
             </div>

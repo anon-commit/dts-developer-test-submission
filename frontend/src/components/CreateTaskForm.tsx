@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import * as GovUK from "govuk-react";
 import { useForm } from "react-hook-form";
 import { validateTitle, validateDueDate, validateDueTime } from "../validators";
@@ -41,10 +41,10 @@ function CreateTaskForm() {
 
   const { mutate, isPending, error, data } = useCreateTask();
 
-  const onSubmit = useCallback((params: CreateTaskParams) => {
+  const onSubmit = (params: CreateTaskParams) => {
     setSubmittedData(params);
     mutate(params!);
-  }, []);
+  };
 
   if (!submittedData) {
     return (

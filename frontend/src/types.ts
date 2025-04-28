@@ -67,6 +67,6 @@ export type IdParam = {
   id: number;
 };
 
-export type deleteTaskParams = {
+export type DeleteTaskParams = {
   id: number;
 };
