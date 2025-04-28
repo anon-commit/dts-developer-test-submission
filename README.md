@@ -64,8 +64,8 @@ pnpm test:unit
 
 ---
 
-> Before running backend integration tests, change the value of `DB_PROD` in `backend/.env.local` to `"false"`,
-> otherwise integration tests will not run (due to a guard test that ensures this value is false).
+Before running backend integration tests, change the value of `DB_PROD` in `backend/.env.local` to `"false"`,
+otherwise integration tests will not run (due to a guard test that ensures this value is false).
 
 To run backend integration tests, from the `backend` directory, run:
 
