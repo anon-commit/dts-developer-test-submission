@@ -14,9 +14,20 @@
 
 ## Running the app
 
-[Node.js](https://nodejs.org/en) and a package manager such as [pnpm](https://pnpm.io/) is required to run this application.
+#### Prerequisites
 
-1. Start the backend:
+- [Node.js](https://nodejs.org/en)
+- Package manager such as [pnpm](https://pnpm.io/).
+- [PostgreSQL](https://www.postgresql.org/) and psql
+
+1. Initialise and seed the database:
+
+```
+  cd backend
+  pnpm init-db && pnpm seed-db
+```
+
+2. Start the backend:
 
 ```
   cd backend
@@ -31,6 +42,9 @@
 ```
 
 3. Go to http://localhost:5173 on your browser to access the frontend.
+
+If you encounter issues connecting to the database, ensure the credentials in
+`backend/.env.local` are compatible with your postgres installation.
 
 <a name="test"></a>
 
