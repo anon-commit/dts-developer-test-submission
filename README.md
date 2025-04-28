@@ -31,6 +31,7 @@
 
 ```
   cd backend
+  pnpm i
   pnpm dev
 ```
 
@@ -38,6 +39,7 @@
 
 ```
   cd frontend
+  pnpm i
   pnpm dev
 ```
 
