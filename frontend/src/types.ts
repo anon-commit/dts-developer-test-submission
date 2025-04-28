@@ -19,7 +19,12 @@ export type Task = {
 
 export interface TaskResponse {
   success: boolean;
-  data: Task | Task[];
+  data: Task;
+}
+
+export interface TaskArrayResponse {
+  success: boolean;
+  data: { tasks: Task[] };
 }
 
 export interface UpdateTaskResponse {

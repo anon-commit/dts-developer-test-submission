@@ -7,18 +7,19 @@ import {
   updateTaskStatus,
   deleteTask,
 } from "./fetchers";
-import {
-  type SortOrder,
-  type SortBy,
-  type Status,
-  type CreateTaskParams,
-  type UpdateTaskStatusParams,
-  type ErrorPayload,
-  type TaskResponse,
-  type UpdateTaskResponse,
-  type IdParam,
-  type NoContentResponse,
+import type {
+  SortOrder,
+  SortBy,
+  Status,
+  CreateTaskParams,
+  UpdateTaskStatusParams,
+  ErrorPayload,
+  TaskResponse,
+  UpdateTaskResponse,
+  IdParam,
+  NoContentResponse,
   TaskCountResponse,
+  TaskArrayResponse,
 } from "../types";
 import { AxiosError } from "axios";
 
@@ -31,8 +32,7 @@ export function useCreateTask() {
 
   return useMutation<TaskResponse, AxiosError<ErrorPayload>, CreateTaskParams>({
     mutationFn: (params) => createTask(params!),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["tasks", "todo"] }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
 }
 
@@ -72,7 +72,7 @@ export function useGetNextPage(params: {
   pageSize: number;
   cursor?: string;
 }) {
-  return useQuery<TaskResponse, AxiosError<ErrorPayload>>({
+  return useQuery<TaskArrayResponse, AxiosError<ErrorPayload>>({
     queryKey: ["tasks", params],
     queryFn: () => getNextPage(params),
   });

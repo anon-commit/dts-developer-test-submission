@@ -8,6 +8,7 @@ import type {
   IdParam,
   NoContentResponse,
   TaskCountResponse,
+  TaskArrayResponse,
 } from "../types";
 import type { AxiosResponse } from "axios";
 
@@ -41,9 +42,7 @@ export async function updateTaskStatus(params: {
     .patch<UpdateTaskResponse, AxiosResponse<UpdateTaskResponse>>(
       `/status/${params.id}`,
       {
-        data: {
-          status: params.status,
-        },
+        status: params.status,
       },
     )
     .then((res) => res.data);
@@ -60,14 +59,16 @@ export async function getNextPage(params: {
   sortOrder: SortOrder;
   pageSize: number;
   cursor?: string;
-}): Promise<TaskResponse> {
+}): Promise<TaskArrayResponse> {
   return api
-    .get<TaskResponse, AxiosResponse<TaskResponse>>(`/page`, {
-      status: params.status,
-      sortBy: params.sortBy,
-      sortOrder: params.sortOrder,
-      pageSize: params.pageSize,
-      cursor: params.cursor,
+    .get<TaskArrayResponse, AxiosResponse<TaskArrayResponse>>(`/page`, {
+      params: {
+        status: params.status,
+        sortBy: params.sortBy,
+        sortOrder: params.sortOrder,
+        pageSize: params.pageSize,
+        cursor: params.cursor,
+      },
     })
     .then((res) => res.data);
 }

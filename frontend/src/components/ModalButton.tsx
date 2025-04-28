@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as GovUK from "govuk-react";
 import ReactModal from "react-modal";
-import CreateTaskForm from "./CreateTaskForm";
 
 const modalStyle = {
   content: {
@@ -15,9 +14,15 @@ const modalStyle = {
   },
 };
 
+interface Props {
+  text: string;
+  children: React.ReactNode;
+  colour?: string;
+}
+
 ReactModal.setAppElement("#root");
 
-function CreateTaskButton() {
+function ModalButton({ text, children, colour }: Props) {
   const [modalIsOpen, setIsOpen] = React.useState(false);
 
   function openModal() {
@@ -30,13 +35,14 @@ function CreateTaskButton() {
 
   return (
     <div>
-      <GovUK.Button onClick={openModal}>Create task</GovUK.Button>
-      <ReactModal
-        style={modalStyle}
-        isOpen={modalIsOpen}
-        contentLabel="Minimal Modal Example"
+      <GovUK.Button
+        buttonColour={colour ? colour : "#00703c"}
+        onClick={openModal}
       >
-        <CreateTaskForm />
+        {text}
+      </GovUK.Button>
+      <ReactModal style={modalStyle} isOpen={modalIsOpen}>
+        {children}
         <GovUK.Button onClick={closeModal} buttonColour={"#1d70b8"}>
           Close
         </GovUK.Button>
@@ -45,4 +51,4 @@ function CreateTaskButton() {
   );
 }
 
-export default CreateTaskButton;
+export default ModalButton;

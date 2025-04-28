@@ -9,3 +9,8 @@ export function statusEnumToDisplay(status: Status) {
 
   return statusMapper[status];
 }
+
+export function getSetStatusOptions(status: Status) {
+  const statusArr: Status[] = ["TODO", "IN_PROGRESS", "DONE"];
+  return statusArr.filter((cur) => status !== cur);
+}

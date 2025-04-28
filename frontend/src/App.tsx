@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as GovUK from "govuk-react";
-import Home from "./Home";
+import Home from "./components/Home";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
