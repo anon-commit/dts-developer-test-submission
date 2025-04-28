@@ -53,6 +53,7 @@ export async function deleteTask({ id }: IdParam): Promise<NoContentResponse> {
     .delete<NoContentResponse, AxiosResponse<NoContentResponse>>(`/${id}`)
     .then((res) => res.data);
 }
+
 export async function getNextPage(params: {
   status: Status;
   sortBy: SortBy;

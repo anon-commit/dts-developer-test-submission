@@ -25,6 +25,7 @@ export interface TaskResponse {
 export interface TaskArrayResponse {
   success: boolean;
   data: { tasks: Task[] };
+  meta: { cursor: string | null };
 }
 
 export interface UpdateTaskResponse {

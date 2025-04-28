@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   createTask,
   getTaskById,
@@ -65,16 +70,33 @@ export function useGetTaskById(id: number) {
   });
 }
 
+// export function useGetNextPage(params: {
+//   status: Status;
+//   sortBy: SortBy;
+//   sortOrder: SortOrder;
+//   pageSize: number;
+//   cursor?: string;
+// }) {
+//   return useQuery<TaskArrayResponse, AxiosError<ErrorPayload>>({
+//     queryKey: ["tasks", params],
+//     queryFn: () => getNextPage(params),
+//   });
+// }
+
 export function useGetNextPage(params: {
   status: Status;
   sortBy: SortBy;
   sortOrder: SortOrder;
   pageSize: number;
-  cursor?: string;
 }) {
-  return useQuery<TaskArrayResponse, AxiosError<ErrorPayload>>({
+  return useInfiniteQuery<TaskArrayResponse, AxiosError<ErrorPayload>>({
     queryKey: ["tasks", params],
-    queryFn: () => getNextPage(params),
+    queryFn: ({ pageParam }) => getNextPage({ ...params, cursor: pageParam }),
+    initialPageParam: null,
+    getNextPageParam: (lastPage) => {
+      console.log(lastPage.meta.cursor);
+      return lastPage.meta.cursor;
+    },
   });
 }
 
