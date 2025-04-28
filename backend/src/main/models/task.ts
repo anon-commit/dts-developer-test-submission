@@ -83,6 +83,28 @@ class Task {
   /**
    * Returns the next page of size `pageSize` from the database,
    * where the tasks have a status equal to `pageParams.status`,
+   * ordered by creation date in ascending or descending order, based on `sortOrder`.
+   *
+   * Does not throw
+   */
+  static async getTasksByCreatedSafe(
+    sortOrder: SortOrder,
+    pageParams: IGetTasksByCreatedDescParams,
+  ): Promise<ITask[]> {
+    let page: ITask[];
+
+    if (sortOrder == "DESC") {
+      page = await getTasksByCreatedDesc.run(pageParams, pool);
+    } else {
+      page = await getTasksByCreatedAsc.run(pageParams, pool);
+    }
+
+    return page;
+  }
+
+  /**
+   * Returns the next page of size `pageSize` from the database,
+   * where the tasks have a status equal to `pageParams.status`,
    * ordered by due date in ascending or descending order, based on `sortOrder`.
    */
   static async getTasksByDueDate(
@@ -99,6 +121,28 @@ class Task {
 
     if (page.length === 0) {
       throw new TaskNotFoundError();
+    }
+
+    return page;
+  }
+
+  /**
+   * Returns the next page of size `pageSize` from the database,
+   * where the tasks have a status equal to `pageParams.status`,
+   * ordered by due date in ascending or descending order, based on `sortOrder`.
+   *
+   * Does not throw
+   */
+  static async getTasksByDueDateSafe(
+    sortOrder: SortOrder,
+    pageParams: IGetTasksByDueDateDescParams,
+  ): Promise<ITask[]> {
+    let page: ITask[];
+
+    if (sortOrder == "DESC") {
+      page = await getTasksByDueDateDesc.run(pageParams, pool);
+    } else {
+      page = await getTasksByDueDateAsc.run(pageParams, pool);
     }
 
     return page;

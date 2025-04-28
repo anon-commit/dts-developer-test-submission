@@ -4,11 +4,7 @@ import {
   ByDueDateCursorSchema,
 } from "../routes/tasks.schemas";
 import type { IGetAllTasksResult as ITask } from "../queries/taskQueries.queries";
-import type {
-  ByCreatedCursor,
-  ByDueDateCursor,
-  Cursors,
-} from "./types";
+import type { ByCreatedCursor, ByDueDateCursor, Cursors } from "./types";
 
 export function decodeCursor(cursor: string) {
   return JSON.parse(Buffer.from(cursor, "base64").toString());
@@ -20,7 +16,7 @@ export function encodeCursor(cursor: Cursors) {
 
 export const strategies = {
   created: {
-    getTasks: Task.getTasksByCreated,
+    getTasks: Task.getTasksByCreatedSafe,
     cursorSchema: ByCreatedCursorSchema,
     getNextCursor: (lastTask: ITask): ByCreatedCursor => ({
       prevId: lastTask.id,
@@ -28,7 +24,7 @@ export const strategies = {
     }),
   },
   dueDate: {
-    getTasks: Task.getTasksByDueDate,
+    getTasks: Task.getTasksByDueDateSafe,
     cursorSchema: ByDueDateCursorSchema,
     getNextCursor: (lastTask: ITask): ByDueDateCursor => ({
       prevId: lastTask.id,
