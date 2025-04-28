@@ -67,6 +67,8 @@ pnpm test:unit
 Before running backend integration tests, change the value of `DB_PROD` in `backend/.env.local` to `"false"`,
 otherwise integration tests will not run (due to a guard test that ensures this value is false).
 
+Also ensure that you have installed dependencies using your package manager of choice.
+
 To run backend integration tests, from the `backend` directory, run:
 
 ```
@@ -83,6 +85,8 @@ pnpm init-test-db \
   && pnpm test:integration --run \
   && pnpm drop-test-db
 ```
+
+If tests exit during execution due to an error, run `pnpm drop-test-db` to delete the test database.
 
 <a name="tech"></a>
 
