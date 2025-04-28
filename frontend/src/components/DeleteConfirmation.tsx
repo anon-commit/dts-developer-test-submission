@@ -30,14 +30,6 @@ function DeleteTaskConfirmation(id: Props) {
       </>
     );
   }
-
-  if (submittedData) {
-    return (
-      <div>
-        <GovUK.Panel title="Task deleted" />
-      </div>
-    );
-  }
 }
 
 export default DeleteTaskConfirmation;

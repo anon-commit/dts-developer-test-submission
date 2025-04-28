@@ -58,14 +58,6 @@ function SelectStatusForm({ id, status }: Props) {
       </>
     );
   }
-
-  if (submittedData) {
-    return (
-      <div>
-        <GovUK.Panel title="Task status updated" />
-      </div>
-    );
-  }
 }
 
 export default SelectStatusForm;
