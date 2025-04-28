@@ -47,7 +47,7 @@ tasks.get("/count", async (c: Context) => {
  * Retrieves tasks with pagination using cursor-based pagination.
  * Query parameters:
  * - status: 'TODO', 'IN_PROGRESS' or 'DONE'
- * - sortBy: 'created', 'status' or 'dueDate'
+ * - sortBy: 'created' or 'dueDate'
  * - sortOrder: 'ASC' or 'DESC'
  * - pageSize: number
  * - cursor: base64 encoded cursor for pagination (not required for first page)

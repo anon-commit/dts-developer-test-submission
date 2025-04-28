@@ -77,7 +77,7 @@ Error responses will have a `message` property and in some cases an `errors` pro
 - **Query Parameters:**
 
   - `status`: 'TODO', 'IN_PROGRESS' or 'DONE'
-  - `sortBy`: 'created', 'status' or 'dueDate'
+  - `sortBy`: 'created' or 'dueDate'
   - `sortOrder`: 'ASC' or 'DESC'
   - `pageSize`: Number
   - `cursor`: base64 encoded cursor for pagination (not required for first page)

@@ -11,7 +11,7 @@ const DateSchema = z
   .string({ message: "A date and time is required" })
   .datetime({
     message:
-      "Invalid datetime format. Datetimes must be supplied in ISO 8601 format with the UTC time zone designator.",
+      "Invalid datetime format. Datetimes must be supplied in ISO 8601 format in UTC time.",
   })
   .transform((str) => new Date(str));
 
@@ -27,7 +27,7 @@ export const CreateTaskSchema = z.object({
   status: StatusEnum.default("TODO"),
   due_date: DateSchema.refine(
     (date) => {
-      return date > new Date(); // true if date is in the future
+      return typeof date === "string" || date > new Date();
     },
     { message: "Due date must be in the future" },
   ),
@@ -51,7 +51,7 @@ export const SortOrderSchema = z.enum(["ASC", "DESC"]).default("DESC");
 
 export const PaginationQuerySchema = z.object({
   status: StatusEnum,
-  sortBy: z.enum(["created", "status", "dueDate"]).default("created"),
+  sortBy: z.enum(["created", "dueDate"]).default("created"),
   sortOrder: SortOrderSchema,
   pageSize: z.coerce
     .number({ message: "Page size is required must be a number" })
