@@ -39,7 +39,7 @@ function CreateTaskForm() {
     null,
   );
 
-  const { mutate, isPending, error, data } = useCreateTask();
+  const { mutate } = useCreateTask();
 
   const onSubmit = (params: CreateTaskParams) => {
     setSubmittedData(params);

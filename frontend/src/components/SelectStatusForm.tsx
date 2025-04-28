@@ -23,7 +23,7 @@ function SelectStatusForm({ id, status }: Props) {
   const [submittedData, setSubmittedData] =
     useState<UpdateTaskStatusParams | null>(null);
 
-  const { mutate, isPending, error, data } = useUpdateTaskStatus();
+  const { mutate } = useUpdateTaskStatus();
 
   const onSubmit = (formValues: { status: Status }) => {
     setSubmittedData({ id, status: formValues.status });

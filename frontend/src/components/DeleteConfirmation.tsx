@@ -12,7 +12,7 @@ function DeleteTaskConfirmation(id: Props) {
     null,
   );
 
-  const { mutate, isPending, error, data } = useDeleteTask();
+  const { mutate } = useDeleteTask();
 
   const onConfirm = (id: DeleteTaskParams) => {
     setSubmittedData(id);
